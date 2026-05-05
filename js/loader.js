@@ -1,44 +1,37 @@
 /**
- * loader.js — Kinetic Loading Animation
+ * loader.js — Micrographics Print-Press Loader
  *
- * Inspired by Love Death + Robots opening sequences:
- * rapid circuit traces, hard cuts, kinetic text, white flash reveal.
+ * Aesthetic: product spec sheet / industrial print production.
+ * Not a terminal. Not a circuit board. A high-speed PRINT RUN.
  *
- * Timeline (4.4s total):
- *  0–400ms   : Black screen (tension)
- *  400–1900ms: Circuit traces erupt across screen
- *  1900–2700ms: Convergence — traces focus to center, targeting reticle
- *  2700–3600ms: Name reveal — CHRISTIAN slams from left, KIM from right, glitch
- *  3600–4400ms: Flash out — white builds, site reveals
+ * Animation arc (≈3.2s total):
+ *  0 – 300ms    : Empty paper — tension
+ *  300 – 1700ms : Micro-text items APPEAR hard (no fade) one by one,
+ *                 scattered like a spec sheet compositing itself
+ *  1700 – 2100ms: Horizontal rules draw across
+ *  2100ms        : "CHRISTIAN" slams in — hard cut, massive condensed
+ *  2380ms        : "KIM" appears below — hard cut
+ *  2600ms        : Subtitle / classification line
+ *  2700 – 3100ms: Rapid projector-flicker (paper ↔ black)
+ *  3100ms        : Site loads
  */
 
 ;(function () {
-  const canvas  = document.getElementById('loader-canvas');
-  const overlay = document.getElementById('loader-overlay');
+
+  const loader  = document.getElementById('loader');
+  const canvas  = loader.querySelector('canvas');
   const site    = document.getElementById('site');
   const nav     = document.getElementById('nav');
-  const loader  = document.getElementById('loader');
   const ctx     = canvas.getContext('2d');
 
   let W, H, raf;
-  let t0 = null; // animation start time
+  let t0 = null;
 
-  /* ── Timing constants (ms) ─────────────────────────────── */
-  const T_CIRCUIT_START  =  400;
-  const T_CIRCUIT_END    = 1900;
-  const T_CONVERGE_END   = 2700;
-  const T_NAME_CHRISTIAN = 2700;
-  const T_NAME_KIM       = 2860;
-  const T_ROLE           = 3050;
-  const T_FLASH_START    = 3600;
-  const T_TOTAL          = 4400;
+  const PAPER = '#EDEBE3';
+  const INK   = '#1A1916';
+  const MID   = '#6B6860';
 
-  /* ── Palette ────────────────────────────────────────────── */
-  const TEAL  = '#00FFB2';
-  const BLUE  = '#0077FF';
-  const WHITE = '#FFFFFF';
-
-  /* ── Utility ────────────────────────────────────────────── */
+  /* ── Sizing ──────────────────────────────────────── */
   function resize () {
     W = canvas.width  = window.innerWidth;
     H = canvas.height = window.innerHeight;
@@ -46,421 +39,226 @@
   resize();
   window.addEventListener('resize', resize);
 
-  function lerp (a, b, t) { return a + (b - a) * t; }
+  /* ── Timing ──────────────────────────────────────── */
+  const T_ITEMS_START  =  300;
+  const T_ITEMS_END    = 1700;
+  const T_RULES        = 1700;
+  const T_RULES_END    = 2100;
+  const T_NAME_1       = 2100;
+  const T_NAME_2       = 2380;
+  const T_SUB          = 2600;
+  const T_FLICKER      = 2700;
+  const T_DONE         = 3200;
 
-  function easeOutExpo (t) {
-    return t === 1 ? 1 : 1 - Math.pow(2, -10 * t);
-  }
+  /* ── Scatter items — fixed layout, like a composed sheet ── */
+  /* Positions are proportional (0–1) so they scale with viewport */
+  const ITEMS = [
+    /* classification strip — top */
+    { t:'CHRISTIAN KIM CO.',    x:.04, y:.07, size: 9, font:'mono', color: MID,  rot: 0 },
+    { t:'SERIES 01 / 12',        x:.38, y:.07, size: 9, font:'mono', color: MID,  rot: 0 },
+    { t:'2026',                  x:.72, y:.07, size: 9, font:'mono', color: MID,  rot: 0 },
+    { t:'EST. BEAVERTON, OREGON',x:.85, y:.07, size: 8, font:'mono', color: MID,  rot: 0 },
 
-  function easeOutCubic (t) {
-    return 1 - Math.pow(1 - t, 3);
-  }
+    /* left vertical stamp */
+    { t:'CIRCUIT DESIGN · PCB LAYOUT · EMBEDDED SYSTEMS',
+                                 x:.03, y:.55, size: 8, font:'mono', color: INK, rot:-90, alpha:.2 },
 
-  function easeInCubic (t) {
-    return t * t * t;
-  }
+    /* right vertical stamp */
+    { t:'SIGNAL INTEGRITY · REGULATORY COMPLIANCE · EE',
+                                 x:.97, y:.48, size: 8, font:'mono', color: INK, rot: 90, alpha:.2 },
 
-  function clamp01 (v) {
-    return Math.max(0, Math.min(1, v));
-  }
+    /* scattered classification marks */
+    { t:'NSRL — EE RESEARCH LAB',x:.04, y:.15, size: 8, font:'mono', color: MID,  rot: 0 },
+    { t:'NODE: CK-EE-001',       x:.68, y:.15, size: 8, font:'mono', color: MID,  rot: 0 },
+    { t:'/////',                 x:.04, y:.82, size:13, font:'mono', color: INK,  rot: 0, alpha:.35 },
+    { t:'OUTPUT: SYSTEMS',       x:.04, y:.88, size: 8, font:'mono', color: MID,  rot: 0 },
+    { t:'INPUT: PROBLEMS',       x:.04, y:.92, size: 8, font:'mono', color: MID,  rot: 0 },
+    { t:'COMPLIANCE: IPC-2581 · IEEE',
+                                 x:.55, y:.88, size: 8, font:'mono', color: MID,  rot: 0 },
+    { t:'V=IR',                  x:.84, y:.82, size:28, font:'display',color:INK, rot: 0, alpha:.12 },
+    { t:'IDENTIFICATION NO. 0xCK00001-2026',
+                                 x:.38, y:.92, size: 8, font:'mono', color: MID,  rot: 0 },
 
-  /* progress between two time points, clamped 0→1 */
-  function phase (elapsed, start, end) {
-    return clamp01((elapsed - start) / (end - start));
-  }
+    /* corner registration marks + circles */
+    { t:'+', x:.04, y:.04, size:18, font:'mono', color: INK, rot:0, alpha:.55, regMark: true },
+    { t:'+', x:.96, y:.04, size:18, font:'mono', color: INK, rot:0, alpha:.55, regMark: true },
+    { t:'+', x:.04, y:.96, size:18, font:'mono', color: INK, rot:0, alpha:.55, regMark: true },
+    { t:'+', x:.96, y:.96, size:18, font:'mono', color: INK, rot:0, alpha:.55, regMark: true },
 
-  /* ── Circuit Trace ──────────────────────────────────────── */
-  class Trace {
-    constructor () { this.reset(); }
+    /* caution triangle zone */
+    { t:'CAUTION',               x:.36, y:.12, size:10, font:'mono', color: INK, rot:0, alpha:.4  },
+    { t:'△',                     x:.47, y:.12, size:16, font:'mono', color: INK, rot:0, alpha:.4  },
 
-    reset () {
-      /* spawn near center but offset */
-      const margin = 100;
-      this.x = margin + Math.random() * (W - margin * 2);
-      this.y = margin + Math.random() * (H - margin * 2);
-      this.pts   = [{ x: this.x, y: this.y }];
-      this.maxSeg = Math.floor(Math.random() * 7) + 4;
-      this.seg    = 0;
-      this.prog   = 0;               // 0→1 within current segment
-      this.speed  = 0.025 + Math.random() * 0.035;
-      this.color  = Math.random() < 0.18 ? BLUE : TEAL;
-      this.lw     = Math.random() < 0.25 ? 1.4 : 0.7;
-      this.alpha  = 0;
-      this.targetAlpha = 0.45 + Math.random() * 0.55;
-      this.done   = false;
-      this._addSeg();
-    }
+    /* MADE IN block */
+    { t:'MADE IN USA · >>>',     x:.04, y:.96, size: 8, font:'mono', color: MID, rot:0 },
 
-    _addSeg () {
-      if (this.seg >= this.maxSeg) { this.done = true; return; }
-      const horiz  = Math.random() < 0.5;
-      const length = (Math.random() * 130 + 50) * (Math.random() < 0.5 ? 1 : -1);
-      const last   = this.pts[this.pts.length - 1];
-      let nx = last.x + (horiz ? length : 0);
-      let ny = last.y + (horiz ? 0 : length);
-      nx = Math.max(10, Math.min(W - 10, nx));
-      ny = Math.max(10, Math.min(H - 10, ny));
-      this.pts.push({ x: nx, y: ny });
-      this.seg++;
-    }
+    /* data row mid-right */
+    { t:'PARAMETER',             x:.62, y:.82, size: 8, font:'mono', color: MID, rot:0 },
+    { t:'CK-PCB-EE',             x:.72, y:.86, size:10, font:'mono', color: INK, rot:0 },
+    { t:'394.41 — 394.41',       x:.72, y:.91, size: 8, font:'mono', color: MID, rot:0 },
+  ];
 
-    update () {
-      this.alpha += (this.targetAlpha - this.alpha) * 0.07;
-      if (this.done) return;
-      this.prog += this.speed;
-      if (this.prog >= 1) {
-        this.prog = 0;
-        this._addSeg();
-      }
-    }
+  /* stagger: each item gets a scheduled appearance time */
+  const totalItems = ITEMS.length;
+  const staggerMs  = (T_ITEMS_END - T_ITEMS_START) / totalItems;
+  const visible    = new Array(totalItems).fill(false);
 
-    draw (ctx) {
-      if (this.pts.length < 2) return;
-      ctx.save();
-      ctx.globalAlpha = this.alpha;
-      ctx.strokeStyle = this.color;
-      ctx.lineWidth   = this.lw;
-      ctx.shadowBlur  = 5;
-      ctx.shadowColor = this.color;
-      ctx.lineCap     = 'round';
+  /* ── Utility ─────────────────────────────────────── */
+  function clamp01 (v) { return Math.max(0, Math.min(1, v)); }
+  function phase (e, a, b) { return clamp01((e - a) / (b - a)); }
 
-      ctx.beginPath();
-      ctx.moveTo(this.pts[0].x, this.pts[0].y);
-      for (let i = 1; i < this.pts.length - 1; i++) {
-        ctx.lineTo(this.pts[i].x, this.pts[i].y);
-      }
-
-      /* current segment partially drawn */
-      const prev = this.pts[this.pts.length - 2];
-      const curr = this.pts[this.pts.length - 1];
-      ctx.lineTo(
-        prev.x + (curr.x - prev.x) * this.prog,
-        prev.y + (curr.y - prev.y) * this.prog
-      );
-      ctx.stroke();
-
-      /* traveling spark */
-      if (!this.done && this.prog < 1) {
-        const sx = prev.x + (curr.x - prev.x) * this.prog;
-        const sy = prev.y + (curr.y - prev.y) * this.prog;
-        ctx.beginPath();
-        ctx.arc(sx, sy, 3.5, 0, Math.PI * 2);
-        ctx.fillStyle = WHITE;
-        ctx.shadowBlur = 14;
-        ctx.shadowColor = this.color;
-        ctx.fill();
-      }
-
-      /* junction dots */
-      for (let i = 0; i < this.pts.length - 1; i++) {
-        ctx.beginPath();
-        ctx.arc(this.pts[i].x, this.pts[i].y, 2, 0, Math.PI * 2);
-        ctx.fillStyle = this.color;
-        ctx.shadowBlur = 6;
-        ctx.fill();
-      }
-
-      ctx.restore();
+  function setFont (size, type) {
+    if (type === 'display') {
+      ctx.font = `800 ${size}px 'Barlow Condensed', 'Arial Narrow', sans-serif`;
+    } else {
+      ctx.font = `400 ${size}px 'IBM Plex Mono', monospace`;
     }
   }
 
-  /* ── Targeting Reticle ──────────────────────────────────── */
-  function drawReticle (ctx, cx, cy, r, alpha, spin) {
+  /* Registration circle around the + mark */
+  function drawRegMark (x, y, alpha) {
     ctx.save();
-    ctx.globalAlpha = alpha;
-    ctx.strokeStyle = TEAL;
+    ctx.globalAlpha = alpha * 0.55;
+    ctx.strokeStyle = INK;
     ctx.lineWidth   = 0.8;
-    ctx.shadowBlur  = 8;
-    ctx.shadowColor = TEAL;
-    ctx.translate(cx, cy);
-    ctx.rotate(spin);
-
-    /* outer circle */
     ctx.beginPath();
-    ctx.arc(0, 0, r, 0, Math.PI * 2);
+    ctx.arc(x, y, 14, 0, Math.PI * 2);
     ctx.stroke();
-
-    /* inner circle */
-    ctx.beginPath();
-    ctx.arc(0, 0, r * 0.4, 0, Math.PI * 2);
-    ctx.stroke();
-
-    /* cross hairs */
-    const gap = r * 0.55;
-    for (let a = 0; a < 4; a++) {
-      ctx.rotate(Math.PI / 2);
-      ctx.beginPath();
-      ctx.moveTo(0, gap);
-      ctx.lineTo(0, r * 1.15);
-      ctx.stroke();
-    }
-
-    /* tick marks */
-    for (let i = 0; i < 12; i++) {
-      const angle = (i / 12) * Math.PI * 2;
-      const ir = r * 0.88, or = r;
-      ctx.beginPath();
-      ctx.moveTo(Math.cos(angle) * ir, Math.sin(angle) * ir);
-      ctx.lineTo(Math.cos(angle) * or, Math.sin(angle) * or);
-      ctx.stroke();
-    }
-
     ctx.restore();
   }
 
-  /* ── Scanline ───────────────────────────────────────────── */
-  function drawScanlines (alpha) {
-    if (alpha <= 0) return;
-    ctx.save();
-    ctx.globalAlpha = alpha * 0.35;
-    for (let y = 0; y < H; y += 3) {
-      ctx.fillStyle = 'rgba(0,0,0,1)';
-      ctx.fillRect(0, y, W, 1);
-    }
-    /* moving scan band */
-    const band = (performance.now() * 0.08) % (H + 40) - 20;
-    ctx.globalAlpha = alpha * 0.04;
-    ctx.fillStyle = TEAL;
-    ctx.fillRect(0, band, W, 3);
-    ctx.restore();
-  }
-
-  /* ── Text Helpers ───────────────────────────────────────── */
-  function measureText (text, fontSize) {
-    ctx.save();
-    ctx.font = `700 ${fontSize}px 'Space Grotesk', sans-serif`;
-    const w = ctx.measureText(text).width;
-    ctx.restore();
-    return w;
-  }
-
-  /**
-   * Draw text with optional chromatic aberration (glitch RGB split)
-   */
-  function drawText (text, x, y, fontSize, color, alpha, glitch) {
-    ctx.save();
-    ctx.font        = `700 ${fontSize}px 'Space Grotesk', sans-serif`;
-    ctx.textAlign   = 'center';
-    ctx.textBaseline= 'middle';
-
-    if (glitch > 0.02) {
-      const ox = (Math.random() - 0.5) * glitch * 24;
-      const oy = (Math.random() - 0.5) * glitch * 6;
-      ctx.globalAlpha = alpha * 0.6;
-      ctx.fillStyle   = '#FF0055';
-      ctx.fillText(text, x + ox + 4, y + oy);
-      ctx.fillStyle   = '#00FFFF';
-      ctx.fillText(text, x - ox - 4, y - oy);
-    }
-
-    ctx.globalAlpha = alpha;
-    ctx.shadowBlur  = glitch > 0.1 ? 0 : 20;
-    ctx.shadowColor = color;
-    ctx.fillStyle   = color;
-    ctx.fillText(text, x, y);
-    ctx.restore();
-  }
-
-  /* ── Noise / flicker ────────────────────────────────────── */
-  function drawNoise (alpha) {
-    if (alpha <= 0) return;
-    ctx.save();
-    const imgData = ctx.createImageData(W, H);
-    const d = imgData.data;
-    for (let i = 0; i < d.length; i += 4) {
-      const v = Math.random() > 0.97 ? 255 : 0;
-      d[i] = v; d[i+1] = v; d[i+2] = v;
-      d[i+3] = v * alpha * 0.5;
-    }
-    ctx.putImageData(imgData, 0, 0);
-    ctx.restore();
-  }
-
-  /* ── Animation state ────────────────────────────────────── */
-  const traces = [];
-  let traceBudget = 0; /* how many we've spawned */
-
-  /* ── Main loop ──────────────────────────────────────────── */
+  /* ── Main tick ───────────────────────────────────── */
   function tick (now) {
     if (!t0) t0 = now;
-    const elapsed = now - t0;
+    const e = now - t0; // elapsed ms
 
-    /* ── Clear ── */
-    ctx.clearRect(0, 0, W, H);
-    ctx.fillStyle = '#000';
+    /* Clear with paper */
+    ctx.fillStyle = PAPER;
     ctx.fillRect(0, 0, W, H);
 
-    /* ======================================================
-       PHASE 1 — Circuit traces
-    ====================================================== */
-    if (elapsed >= T_CIRCUIT_START && elapsed < T_FLASH_START) {
-      /* spawn traces rapidly */
-      if (elapsed < T_CIRCUIT_END) {
-        const density = phase(elapsed, T_CIRCUIT_START, T_CIRCUIT_END);
-        const budget  = Math.floor(density * 55);
-        while (traceBudget < budget) {
-          traces.push(new Trace());
-          traceBudget++;
-        }
-      }
+    /* ── PHASE 1: items appear ───────────────────── */
+    for (let i = 0; i < totalItems; i++) {
+      const appearsAt = T_ITEMS_START + i * staggerMs;
+      if (e >= appearsAt) visible[i] = true;
+    }
 
-      /* fade traces out as we approach flash */
-      const fadeOut = elapsed > T_CONVERGE_END
-        ? 1 - phase(elapsed, T_CONVERGE_END, T_FLASH_START)
-        : 1;
+    for (let i = 0; i < totalItems; i++) {
+      if (!visible[i]) continue;
+      const item = ITEMS[i];
+      const px = item.x * W;
+      const py = item.y * H;
+      const a  = item.alpha !== undefined ? item.alpha : 1;
 
       ctx.save();
-      ctx.globalAlpha = fadeOut;
-      for (const tr of traces) { tr.update(); tr.draw(ctx); }
+      ctx.globalAlpha = a;
+      ctx.translate(px, py);
+      if (item.rot) ctx.rotate(item.rot * Math.PI / 180);
+      setFont(item.size, item.font);
+      ctx.fillStyle   = item.color;
+      ctx.textBaseline = 'middle';
+      ctx.textAlign    = item.rot < 0 ? 'right' : (item.rot > 0 ? 'left' : 'left');
+      ctx.fillText(item.t, 0, 0);
+      ctx.restore();
+
+      if (item.regMark) {
+        drawRegMark(px, py, a);
+      }
+    }
+
+    /* ── PHASE 2: horizontal rules draw across ───── */
+    if (e >= T_RULES) {
+      const rp = phase(e, T_RULES, T_RULES_END);
+
+      /* top rule */
+      ctx.save();
+      ctx.fillStyle   = INK;
+      ctx.globalAlpha = 0.55;
+      ctx.fillRect(0, H * 0.1, W * rp, 0.75);
+      /* bottom rule */
+      ctx.fillRect(0, H * 0.9, W * rp, 0.75);
       ctx.restore();
     }
 
-    /* scanlines always on */
-    drawScanlines(clamp01((elapsed - T_CIRCUIT_START) / 600));
+    /* ── PHASE 3: NAME — hard cuts ───────────────── */
+    if (e >= T_NAME_1 && e < T_FLICKER) {
+      /* dim everything behind */
+      ctx.fillStyle   = 'rgba(237,235,227,0.6)';
+      ctx.fillRect(0, 0, W, H);
 
-    /* ======================================================
-       PHASE 2 — Convergence reticle
-    ====================================================== */
-    if (elapsed >= T_CIRCUIT_END && elapsed < T_FLASH_START) {
-      const t       = phase(elapsed, T_CIRCUIT_END, T_CONVERGE_END);
-      const spin    = (elapsed * 0.001) % (Math.PI * 2);
-      const r       = lerp(280, 90, easeOutCubic(t));
-      const alpha   = elapsed < T_CONVERGE_END
-        ? easeOutCubic(t)
-        : 1 - phase(elapsed, T_CONVERGE_END, T_NAME_KIM);
+      const nameSize = Math.min(W * 0.165, 200);
 
-      /* flicker effect right before name */
-      const flicker = t > 0.85
-        ? (Math.sin(elapsed * 0.04) > 0 ? 1 : 0.2)
-        : 1;
-
-      drawReticle(ctx, W / 2, H / 2, r, alpha * flicker, spin);
-
-      /* corner data readouts — micrographic HUD elements */
-      const hudAlpha = easeOutCubic(t) * flicker;
+      /* "CHRISTIAN" */
       ctx.save();
-      ctx.globalAlpha = hudAlpha * 0.6;
-      ctx.font        = `100 10px 'JetBrains Mono', monospace`;
-      ctx.fillStyle   = TEAL;
-      ctx.textAlign   = 'left';
-      ctx.fillText('NODE_ACTIVE: CK-EE-001',  24, 24);
-      ctx.fillText('FREQ: 168.000 MHz',        24, 38);
-      ctx.fillText('SIG_INT: NOMINAL',         24, 52);
-      ctx.textAlign = 'right';
-      ctx.fillText('SYS_CLK: LOCKED',   W - 24, 24);
-      ctx.fillText('CAP: 10.0 Gbps',    W - 24, 38);
-      ctx.fillText('STATUS: [ACTIVE]',  W - 24, 52);
-      ctx.textAlign = 'left';
-      ctx.fillText('PCB_LAYER: 8',      24, H - 52);
-      ctx.fillText('IMP: 100Ω ±5%',    24, H - 38);
-      ctx.fillText('EYE: OPEN',        24, H - 24);
-      ctx.textAlign = 'right';
-      ctx.fillText('TEMP: 32.4°C',     W - 24, H - 52);
-      ctx.fillText('ERR_RATE: 0.000%', W - 24, H - 38);
-      ctx.fillText('// ONLINE',        W - 24, H - 24);
+      ctx.font         = `800 ${nameSize}px 'Barlow Condensed', 'Arial Narrow', sans-serif`;
+      ctx.textAlign    = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillStyle    = INK;
+      ctx.fillText('CHRISTIAN', W / 2, H / 2 - nameSize * 0.55);
       ctx.restore();
-    }
 
-    /* ======================================================
-       PHASE 3 — Name reveal (SLAM + GLITCH)
-    ====================================================== */
-    if (elapsed >= T_NAME_CHRISTIAN && elapsed < T_FLASH_START) {
-      const nameSize  = Math.min(W * 0.125, 148);
-      const roleSize  = Math.min(W * 0.018, 15);
-      const centerY   = H / 2;
-
-      /* CHRISTIAN slams from left */
-      const t1        = phase(elapsed, T_NAME_CHRISTIAN, T_NAME_CHRISTIAN + 280);
-      const glitch1   = t1 < 0.6 ? (1 - t1 / 0.6) * 1.2 : 0;
-      const christX   = lerp(-W * 0.4, W / 2, easeOutExpo(t1));
-      const alphaC    = t1;
-      drawText('CHRISTIAN', christX, centerY - nameSize * 0.55, nameSize, WHITE, alphaC, glitch1);
-
-      /* KIM slams from right */
-      if (elapsed >= T_NAME_KIM) {
-        const t2      = phase(elapsed, T_NAME_KIM, T_NAME_KIM + 260);
-        const glitch2 = t2 < 0.6 ? (1 - t2 / 0.6) * 1.4 : 0;
-        const kimX    = lerp(W * 1.4, W / 2, easeOutExpo(t2));
-        const alphaK  = t2;
-        drawText('KIM', kimX, centerY + nameSize * 0.52, nameSize, TEAL, alphaK, glitch2);
-      }
-
-      /* Role line types in */
-      if (elapsed >= T_ROLE) {
-        const t3      = phase(elapsed, T_ROLE, T_ROLE + 500);
-        const chars   = '// ELECTRICAL ENGINEER';
-        const shown   = Math.floor(t3 * chars.length);
-        const partial = chars.slice(0, shown);
-
+      /* "KIM" */
+      if (e >= T_NAME_2) {
         ctx.save();
-        ctx.globalAlpha = t3;
-        ctx.font        = `200 ${roleSize}px 'JetBrains Mono', monospace`;
-        ctx.textAlign   = 'center';
-        ctx.textBaseline= 'middle';
-        ctx.fillStyle   = TEAL;
-        ctx.fillText(partial + (Math.random() > 0.4 ? '█' : ''), W / 2, centerY + nameSize * 0.52 + nameSize * 0.7);
+        ctx.font         = `800 ${nameSize}px 'Barlow Condensed', 'Arial Narrow', sans-serif`;
+        ctx.textAlign    = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillStyle    = INK;
+        ctx.fillText('KIM', W / 2, H / 2 + nameSize * 0.5);
         ctx.restore();
       }
 
-      /* subtle vignette around text */
-      const grad = ctx.createRadialGradient(W/2, H/2, 0, W/2, H/2, Math.max(W,H)*0.6);
-      grad.addColorStop(0, 'rgba(0,0,0,0)');
-      grad.addColorStop(1, 'rgba(0,0,0,0.7)');
+      /* subtitle */
+      if (e >= T_SUB) {
+        ctx.save();
+        ctx.font         = `300 ${Math.min(W * 0.018, 15)}px 'IBM Plex Mono', monospace`;
+        ctx.textAlign    = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillStyle    = MID;
+        ctx.globalAlpha  = phase(e, T_SUB, T_SUB + 300);
+        ctx.fillText('ELECTRICAL ENGINEER · SERIES 01 · CK-EE-001', W / 2, H / 2 + nameSize * 0.5 + nameSize * 0.5 + 14);
+        ctx.restore();
+      }
+
+      /* Thin rules flanking the name */
       ctx.save();
-      ctx.globalAlpha = phase(elapsed, T_NAME_CHRISTIAN, T_FLASH_START);
-      ctx.fillStyle   = grad;
-      ctx.fillRect(0, 0, W, H);
+      ctx.fillStyle   = INK;
+      ctx.globalAlpha = 0.3;
+      ctx.fillRect(W * 0.1, H / 2 - nameSize * 1.1, W * 0.8, 0.75);
+      ctx.fillRect(W * 0.1, H / 2 + nameSize * 1.0, W * 0.8, 0.75);
       ctx.restore();
     }
 
-    /* sparse noise */
-    if (elapsed < T_FLASH_START) {
-      drawNoise(0.03);
-    }
-
-    /* ======================================================
-       PHASE 4 — White flash out
-    ====================================================== */
-    if (elapsed >= T_FLASH_START) {
-      const t = phase(elapsed, T_FLASH_START, T_TOTAL);
-
-      /* ramp up then hard cut */
-      let flashOpacity;
-      if (t < 0.45) {
-        flashOpacity = easeOutCubic(t / 0.45);
-      } else {
-        flashOpacity = 1 - easeInCubic((t - 0.45) / 0.55);
-      }
-      overlay.style.opacity = flashOpacity;
-
-      /* also force a hard white frame at peak */
-      if (t > 0.38 && t < 0.55) {
-        ctx.fillStyle = '#fff';
-        ctx.fillRect(0, 0, W, H);
+    /* ── PHASE 4: flicker / projector ───────────── */
+    if (e >= T_FLICKER) {
+      const fp = phase(e, T_FLICKER, T_DONE);
+      /* Rapid alternation: black frames at specific intervals */
+      const flickers = [0, 0.15, 0.28, 0.42, 0.56, 0.68, 0.80];
+      for (const f of flickers) {
+        if (fp >= f && fp < f + 0.07) {
+          ctx.fillStyle = INK;
+          ctx.fillRect(0, 0, W, H);
+          break;
+        }
       }
     }
 
-    /* ======================================================
-       Done
-    ====================================================== */
-    if (elapsed >= T_TOTAL) {
-      loader.style.transition = 'opacity 0.5s ease';
-      loader.style.opacity    = '0';
+    /* ── Done ────────────────────────────────────── */
+    if (e >= T_DONE) {
       site.classList.add('visible');
       nav.classList.add('visible');
-      setTimeout(() => { loader.remove(); }, 500);
+      loader.style.transition = 'opacity 0.35s ease';
+      loader.style.opacity    = '0';
+      setTimeout(() => loader.remove(), 350);
       return;
     }
 
     raf = requestAnimationFrame(tick);
   }
 
-  /* ── Kick off after fonts load ─────────────────────────── */
-  if (document.fonts && document.fonts.ready) {
-    document.fonts.ready.then(() => {
-      raf = requestAnimationFrame(tick);
-    });
-  } else {
-    raf = requestAnimationFrame(tick);
-  }
+  /* Kick off after fonts ─────────────────────────── */
+  const start = () => { raf = requestAnimationFrame(tick); };
+  document.fonts && document.fonts.ready
+    ? document.fonts.ready.then(start)
+    : setTimeout(start, 100);
+
 })();
