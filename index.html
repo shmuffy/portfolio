@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Christian Kim — Electrical Engineer</title>
+  <meta name="description" content="Christian Kim · Electrical Engineer · Circuit Design · Embedded Systems · Signal Integrity" />
+  <meta name="theme-color" content="#070709" />
+
+  <!-- Open Graph -->
+  <meta property="og:title"       content="Christian Kim — Electrical Engineer" />
+  <meta property="og:description" content="PCB design, embedded systems, signal integrity." />
+  <meta property="og:type"        content="website" />
+
+  <!-- Preconnect for fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+<!-- ============================================================
+     LOADER
+============================================================ -->
+<div id="loader">
+  <canvas id="loader-canvas"></canvas>
+  <div id="loader-overlay"></div>
+</div>
+
+<!-- ============================================================
+     CURSOR
+============================================================ -->
+<div id="cursor-outer"></div>
+<div id="cursor-inner"></div>
+
+<!-- ============================================================
+     NAV
+============================================================ -->
+<nav id="nav" role="navigation" aria-label="Main navigation">
+  <div class="nav-logo" aria-label="Christian Kim">CK</div>
+  <ul class="nav-links" role="list">
+    <li><a href="#about"    class="nav-link">ABOUT</a></li>
+    <li><a href="#projects" class="nav-link">WORK</a></li>
+    <li><a href="#contact"  class="nav-link">CONTACT</a></li>
+  </ul>
+  <div class="nav-status" aria-label="Availability status">
+    <span class="status-dot" aria-hidden="true"></span>
+    <span class="status-text">AVAILABLE FOR WORK</span>
+  </div>
+</nav>
+
+<!-- ============================================================
+     MAIN
+============================================================ -->
+<main id="site">
+
+  <!-- ========================================================
+       HERO
+  ======================================================== -->
+  <section id="hero" aria-label="Introduction">
+    <canvas id="hero-canvas" aria-hidden="true"></canvas>
+
+    <!-- Decorative micrographic cross-hairs -->
+    <div class="xhair" style="top:18%;left:10%"    aria-hidden="true"></div>
+    <div class="xhair" style="bottom:20%;right:6%" aria-hidden="true"></div>
+    <div class="xhair" style="top:55%;left:4%"     aria-hidden="true"></div>
+
+    <!-- Annotation labels -->
+    <div class="hero-annotation ha-tr" aria-hidden="true">NODE_ACTIVE · 2026</div>
+    <div class="hero-annotation ha-br" aria-hidden="true">EE · CIRCUIT DESIGN</div>
+
+    <div class="hero-content">
+      <p class="hero-tag">EE · CIRCUIT DESIGN · EMBEDDED SYSTEMS · SIGNAL INTEGRITY</p>
+
+      <h1 class="hero-name">
+        <span class="word">CHRISTIAN</span>
+        <span class="word em">KIM</span>
+      </h1>
+
+      <p class="hero-tagline">
+        Engineering signals into systems.<br>
+        Precision at every layer of the stack.
+      </p>
+
+      <div class="hero-cta">
+        <a href="#projects" class="btn-primary">VIEW MY WORK</a>
+        <a href="#contact"  class="btn-ghost">GET IN TOUCH</a>
+      </div>
+    </div>
+
+    <div class="hero-scroll-hint" aria-hidden="true">
+      <span>SCROLL</span>
+      <div class="scroll-line"></div>
+    </div>
+  </section>
+
+
+  <!-- ========================================================
+       ABOUT
+  ======================================================== -->
+  <section id="about">
+    <div class="section-wrap">
+      <header class="section-header reveal">
+        <span class="section-num">01</span>
+        <h2 class="section-title">ABOUT</h2>
+      </header>
+
+      <div class="about-grid">
+
+        <!-- Text column -->
+        <div class="about-body reveal">
+          <div class="dossier-tag">SUBJECT: CHRISTIAN KIM · ID: CK-EE-001</div>
+
+          <p class="about-lead">
+            I'm an electrical engineer who speaks fluent circuit — from schematic
+            to silicon, from embedded firmware to high-speed PCB layout.
+          </p>
+          <p>
+            With a deep focus on signal integrity, power delivery, and embedded
+            systems, I build hardware that performs under real-world conditions.
+            Every trace, every component choice, every timing constraint is deliberate.
+          </p>
+          <p>
+            When I'm not debugging hardware, I'm studying the gap between how
+            electrons actually behave and how we pretend they do in simulation.
+          </p>
+
+          <div class="about-meta">
+            <div class="meta-item">
+              <span class="meta-label">LOCATION</span>
+              <span class="meta-value">United States</span>
+            </div>
+            <div class="meta-item">
+              <span class="meta-label">FOCUS</span>
+              <span class="meta-value">Circuit Design &amp; Embedded</span>
+            </div>
+            <div class="meta-item">
+              <span class="meta-label">STATUS</span>
+              <span class="meta-value em">Available for Work</span>
+            </div>
+            <div class="meta-item">
+              <span class="meta-label">GITHUB</span>
+              <span class="meta-value">github.com/shmuffy</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Skill matrix -->
+        <div class="skill-panel reveal d2">
+          <div class="skill-group">
+            <span class="skill-group-label">// HARDWARE</span>
+            <div class="tag-cloud">
+              <span class="tag">PCB Design</span>
+              <span class="tag">Altium</span>
+              <span class="tag">KiCad</span>
+              <span class="tag">SPICE</span>
+              <span class="tag">Signal Integrity</span>
+              <span class="tag">Power Systems</span>
+              <span class="tag">EMI/EMC</span>
+            </div>
+          </div>
+          <div class="skill-group">
+            <span class="skill-group-label">// EMBEDDED</span>
+            <div class="tag-cloud">
+              <span class="tag">C / C++</span>
+              <span class="tag">ARM Cortex-M</span>
+              <span class="tag">FreeRTOS</span>
+              <span class="tag">UART · SPI · I²C</span>
+              <span class="tag">CAN Bus</span>
+              <span class="tag">DMA</span>
+            </div>
+          </div>
+          <div class="skill-group">
+            <span class="skill-group-label">// TOOLS &amp; ANALYSIS</span>
+            <div class="tag-cloud">
+              <span class="tag">Oscilloscope</span>
+              <span class="tag">Logic Analyzer</span>
+              <span class="tag">VNA</span>
+              <span class="tag">Python</span>
+              <span class="tag">MATLAB</span>
+              <span class="tag">Git</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ========================================================
+       PROJECTS
+  ======================================================== -->
+  <div id="projects-bg">
+    <section id="projects">
+      <div class="section-wrap">
+        <header class="section-header reveal">
+          <span class="section-num">02</span>
+          <h2 class="section-title">WORK</h2>
+        </header>
+
+        <div class="projects-grid">
+
+          <!-- ── Project 1: BMS ─────────────────────────── -->
+          <article class="project-card reveal">
+            <div class="project-module">
+              MOD-01 · POWER SYSTEMS
+              <span class="project-status ok">COMPLETE</span>
+            </div>
+
+            <!-- Inline schematic — Battery Management System -->
+            <div class="project-schematic" aria-hidden="true">
+              <svg viewBox="0 0 280 90" xmlns="http://www.w3.org/2000/svg" fill="none">
+                <!-- Battery cells (16S represented as 3 stacked) -->
+                <rect x="8"  y="20" width="18" height="50" rx="1" stroke="#00FFB2" stroke-width="0.7"/>
+                <line x1="8"  y1="32" x2="26" y2="32" stroke="#00FFB2" stroke-width="0.5"/>
+                <line x1="8"  y1="44" x2="26" y2="44" stroke="#00FFB2" stroke-width="0.5"/>
+                <line x1="8"  y1="56" x2="26" y2="56" stroke="#00FFB2" stroke-width="0.5"/>
+                <line x1="8"  y1="68" x2="26" y2="68" stroke="#00FFB2" stroke-width="0.5"/>
+                <text x="17" y="83" font-size="5" fill="#00FFB2" text-anchor="middle" font-family="monospace">16S</text>
+                <!-- Trace to BMS IC -->
+                <line x1="26" y1="45" x2="48" y2="45" stroke="#00FFB2" stroke-width="0.7"/>
+                <!-- BMS IC -->
+                <rect x="48" y="26" width="54" height="38" rx="1" stroke="#00FFB2" stroke-width="0.8"/>
+                <text x="75" y="43" font-size="6" fill="#00FFB2" text-anchor="middle" font-family="monospace">BMS_IC</text>
+                <text x="75" y="52" font-size="4.5" fill="#444" text-anchor="middle" font-family="monospace">LTC6813</text>
+                <!-- Pins -->
+                <line x1="48" y1="35" x2="42" y2="35" stroke="#00FFB2" stroke-width="0.5"/>
+                <line x1="48" y1="45" x2="42" y2="45" stroke="#00FFB2" stroke-width="0.5"/>
+                <line x1="48" y1="55" x2="42" y2="55" stroke="#00FFB2" stroke-width="0.5"/>
+                <text x="40" y="37" font-size="4" fill="#555" text-anchor="end" font-family="monospace">VBx</text>
+                <text x="40" y="47" font-size="4" fill="#555" text-anchor="end" font-family="monospace">SPI</text>
+                <text x="40" y="57" font-size="4" fill="#555" text-anchor="end" font-family="monospace">GND</text>
+                <!-- Trace right to CAN transceiver -->
+                <line x1="102" y1="45" x2="126" y2="45" stroke="#00FFB2" stroke-width="0.7"/>
+                <!-- CAN node -->
+                <circle cx="137" cy="45" r="11" stroke="#0077FF" stroke-width="0.8"/>
+                <text x="137" y="43" font-size="5" fill="#0077FF" text-anchor="middle" font-family="monospace">CAN</text>
+                <text x="137" y="51" font-size="4" fill="#0077FF" text-anchor="middle" font-family="monospace">2.0B</text>
+                <!-- Trace to MOSFET gate -->
+                <line x1="148" y1="45" x2="170" y2="45" stroke="#0077FF" stroke-width="0.7"/>
+                <!-- MOSFET symbol -->
+                <line x1="170" y1="30" x2="170" y2="60" stroke="#00FFB2" stroke-width="0.8"/>
+                <line x1="170" y1="38" x2="180" y2="38" stroke="#00FFB2" stroke-width="0.8"/>
+                <line x1="170" y1="52" x2="180" y2="52" stroke="#00FFB2" stroke-width="0.8"/>
+                <line x1="180" y1="35" x2="180" y2="55" stroke="#00FFB2" stroke-width="1.2"/>
+                <line x1="180" y1="45" x2="192" y2="45" stroke="#00FFB2" stroke-width="0.8"/>
+                <text x="174" y="27" font-size="4.5" fill="#00FFB2" font-family="monospace">Q_CHG</text>
+                <!-- Load output -->
+                <rect x="192" y="30" width="30" height="30" rx="1" stroke="#00FFB2" stroke-width="0.8"/>
+                <text x="207" y="48" font-size="5.5" fill="#00FFB2" text-anchor="middle" font-family="monospace">LOAD</text>
+                <!-- Voltage labels -->
+                <text x="17" y="16" font-size="5" fill="#555" text-anchor="middle" font-family="monospace">48V</text>
+                <text x="248" y="48" font-size="5" fill="#555" font-family="monospace">OUT</text>
+                <!-- Thermal annotation -->
+                <line x1="75" y1="64" x2="75" y2="80" stroke="#444" stroke-width="0.4" stroke-dasharray="2,2"/>
+                <text x="75" y="87" font-size="4" fill="#444" text-anchor="middle" font-family="monospace">T_MON</text>
+              </svg>
+            </div>
+
+            <h3 class="project-title">Battery Management System</h3>
+            <p class="project-desc">
+              16S LiFePO₄ BMS with active cell balancing, CAN 2.0B telemetry, and
+              integrated thermal management. Designed for EV auxiliary systems operating
+              at 48V nominal.
+            </p>
+
+            <div class="project-specs">
+              <div class="spec-row">
+                <span class="spec-key">TOPOLOGY</span>
+                <span class="spec-val">16S LiFePO₄ active balance</span>
+              </div>
+              <div class="spec-row">
+                <span class="spec-key">INTERFACE</span>
+                <span class="spec-val">CAN 2.0B · UART · SPI</span>
+              </div>
+              <div class="spec-row">
+                <span class="spec-key">PCB</span>
+                <span class="spec-val">6-layer HDI, 2oz copper</span>
+              </div>
+              <div class="spec-row">
+                <span class="spec-key">ACCURACY</span>
+                <span class="spec-val">±1mV cell voltage</span>
+              </div>
+            </div>
+
+            <div class="project-chips">
+              <span class="chip">Altium</span>
+              <span class="chip">SPICE</span>
+              <span class="chip">CAN Bus</span>
+              <span class="chip">LTC6813</span>
+              <span class="chip">Power Electronics</span>
+            </div>
+          </article>
+
+
+          <!-- ── Project 2: FOC Motor Controller ───────── -->
+          <article class="project-card reveal d1">
+            <div class="project-module">
+              MOD-02 · EMBEDDED SYSTEMS
+              <span class="project-status ok">COMPLETE</span>
+            </div>
+
+            <!-- Schematic: Motor Controller -->
+            <div class="project-schematic" aria-hidden="true">
+              <svg viewBox="0 0 280 90" xmlns="http://www.w3.org/2000/svg" fill="none">
+                <!-- MCU box -->
+                <rect x="10" y="18" width="52" height="54" rx="1" stroke="#00FFB2" stroke-width="0.8"/>
+                <text x="36" y="40" font-size="5.5" fill="#00FFB2" text-anchor="middle" font-family="monospace">ARM</text>
+                <text x="36" y="49" font-size="5.5" fill="#00FFB2" text-anchor="middle" font-family="monospace">M4</text>
+                <text x="36" y="58" font-size="4" fill="#444" text-anchor="middle" font-family="monospace">168 MHz</text>
+                <!-- MCU pins left -->
+                <line x1="0"  y1="28" x2="10" y2="28" stroke="#00FFB2" stroke-width="0.5"/>
+                <line x1="0"  y1="38" x2="10" y2="38" stroke="#00FFB2" stroke-width="0.5"/>
+                <line x1="0"  y1="48" x2="10" y2="48" stroke="#00FFB2" stroke-width="0.5"/>
+                <line x1="0"  y1="58" x2="10" y2="58" stroke="#00FFB2" stroke-width="0.5"/>
+                <text x="1"  y="27" font-size="4" fill="#555" font-family="monospace">ADC</text>
+                <text x="1"  y="37" font-size="4" fill="#555" font-family="monospace">TIM</text>
+                <text x="1"  y="47" font-size="4" fill="#555" font-family="monospace">CAN</text>
+                <text x="1"  y="57" font-size="4" fill="#555" font-family="monospace">SPI</text>
+                <!-- MCU to Gate Driver -->
+                <line x1="62" y1="45" x2="90" y2="45" stroke="#00FFB2" stroke-width="0.7"/>
+                <!-- Gate driver -->
+                <rect x="90" y="25" width="50" height="40" rx="1" stroke="#0077FF" stroke-width="0.8"/>
+                <text x="115" y="44" font-size="5.5" fill="#0077FF" text-anchor="middle" font-family="monospace">GATE</text>
+                <text x="115" y="52" font-size="5" fill="#0077FF" text-anchor="middle" font-family="monospace">DRV</text>
+                <text x="115" y="60" font-size="4" fill="#444" text-anchor="middle" font-family="monospace">DRV8323</text>
+                <!-- 3-phase outputs -->
+                <line x1="140" y1="33" x2="162" y2="33" stroke="#0077FF" stroke-width="0.7"/>
+                <line x1="140" y1="45" x2="162" y2="45" stroke="#0077FF" stroke-width="0.7"/>
+                <line x1="140" y1="57" x2="162" y2="57" stroke="#0077FF" stroke-width="0.7"/>
+                <text x="164" y="35" font-size="4.5" fill="#0077FF" font-family="monospace">U</text>
+                <text x="164" y="47" font-size="4.5" fill="#0077FF" font-family="monospace">V</text>
+                <text x="164" y="59" font-size="4.5" fill="#0077FF" font-family="monospace">W</text>
+                <!-- Motor -->
+                <circle cx="220" cy="45" r="22" stroke="#00FFB2" stroke-width="0.8"/>
+                <text x="220" y="42" font-size="5.5" fill="#00FFB2" text-anchor="middle" font-family="monospace">BLDC</text>
+                <text x="220" y="51" font-size="4.5" fill="#00FFB2" text-anchor="middle" font-family="monospace">MOTOR</text>
+                <line x1="170" y1="33" x2="198" y2="33" stroke="#00FFB2" stroke-width="0.7"/>
+                <line x1="170" y1="45" x2="198" y2="45" stroke="#00FFB2" stroke-width="0.7"/>
+                <line x1="170" y1="57" x2="198" y2="57" stroke="#00FFB2" stroke-width="0.7"/>
+                <!-- Hall sensors feedback -->
+                <line x1="220" y1="67" x2="220" y2="82" stroke="#444" stroke-width="0.5" stroke-dasharray="2,2"/>
+                <line x1="220" y1="82" x2="36"  y2="82" stroke="#444" stroke-width="0.5" stroke-dasharray="2,2"/>
+                <line x1="36"  y1="82" x2="36"  y2="72" stroke="#444" stroke-width="0.5" stroke-dasharray="2,2"/>
+                <text x="128" y="79" font-size="4" fill="#444" text-anchor="middle" font-family="monospace">HALL / ENCODER</text>
+                <!-- Speed label -->
+                <text x="220" y="15" font-size="5" fill="#555" text-anchor="middle" font-family="monospace">FOC 10kHz</text>
+              </svg>
+            </div>
+
+            <h3 class="project-title">FOC Motor Controller</h3>
+            <p class="project-desc">
+              Field-oriented control on ARM Cortex-M4 for 3-phase BLDC motors.
+              Sub-microsecond control loop with Hall sensor feedback and real-time
+              CAN telemetry.
+            </p>
+
+            <div class="project-specs">
+              <div class="spec-row">
+                <span class="spec-key">MCU</span>
+                <span class="spec-val">STM32F4 @ 168 MHz</span>
+              </div>
+              <div class="spec-row">
+                <span class="spec-key">LOOP RATE</span>
+                <span class="spec-val">10 kHz FOC</span>
+              </div>
+              <div class="spec-row">
+                <span class="spec-key">LATENCY</span>
+                <span class="spec-val">&lt;1 μs control delay</span>
+              </div>
+              <div class="spec-row">
+                <span class="spec-key">PHASES</span>
+                <span class="spec-val">3-phase BLDC · SVM</span>
+              </div>
+            </div>
+
+            <div class="project-chips">
+              <span class="chip">C / C++</span>
+              <span class="chip">FreeRTOS</span>
+              <span class="chip">STM32</span>
+              <span class="chip">DRV8323</span>
+              <span class="chip">FOC / SVM</span>
+            </div>
+          </article>
+
+
+          <!-- ── Project 3: Signal Integrity ───────────── -->
+          <article class="project-card reveal d2">
+            <div class="project-module">
+              MOD-03 · SIGNAL INTEGRITY
+              <span class="project-status ok">COMPLETE</span>
+            </div>
+
+            <!-- Schematic: High-speed SI -->
+            <div class="project-schematic" aria-hidden="true">
+              <svg viewBox="0 0 280 90" xmlns="http://www.w3.org/2000/svg" fill="none">
+                <!-- SERDES TX -->
+                <rect x="5" y="22" width="38" height="46" rx="1" stroke="#00FFB2" stroke-width="0.8"/>
+                <text x="24" y="42" font-size="5" fill="#00FFB2" text-anchor="middle" font-family="monospace">SERDES</text>
+                <text x="24" y="51" font-size="4.5" fill="#00FFB2" text-anchor="middle" font-family="monospace">TX</text>
+                <text x="24" y="60" font-size="4" fill="#444" text-anchor="middle" font-family="monospace">10Gbps</text>
+                <!-- Diff pair emerging -->
+                <line x1="43"  y1="37" x2="78"  y2="37" stroke="#00FFB2" stroke-width="0.9"/>
+                <line x1="43"  y1="53" x2="78"  y2="53" stroke="#0077FF" stroke-width="0.9"/>
+                <!-- DP labels -->
+                <text x="58" y="34" font-size="4" fill="#00FFB2" text-anchor="middle" font-family="monospace">DP+</text>
+                <text x="58" y="58" font-size="4" fill="#0077FF" text-anchor="middle" font-family="monospace">DP−</text>
+                <!-- Via stubs -->
+                <circle cx="78" cy="37" r="3.5" stroke="#00FFB2" stroke-width="0.6"/>
+                <circle cx="78" cy="53" r="3.5" stroke="#0077FF" stroke-width="0.6"/>
+                <!-- Continue on inner layer (dashed) -->
+                <line x1="78" y1="37" x2="145" y2="37" stroke="#00FFB2" stroke-width="0.9" stroke-dasharray="4,2"/>
+                <line x1="78" y1="53" x2="145" y2="53" stroke="#0077FF" stroke-width="0.9" stroke-dasharray="4,2"/>
+                <!-- Impedance callout -->
+                <line x1="112" y1="37" x2="112" y2="60" stroke="#444" stroke-width="0.4" stroke-dasharray="1.5,1.5"/>
+                <text x="114" y="64" font-size="4" fill="#444" font-family="monospace">100Ω</text>
+                <!-- Via stubs at RX -->
+                <circle cx="145" cy="37" r="3.5" stroke="#00FFB2" stroke-width="0.6"/>
+                <circle cx="145" cy="53" r="3.5" stroke="#0077FF" stroke-width="0.6"/>
+                <!-- RX traces -->
+                <line x1="145" y1="37" x2="178" y2="37" stroke="#00FFB2" stroke-width="0.9"/>
+                <line x1="145" y1="53" x2="178" y2="53" stroke="#0077FF" stroke-width="0.9"/>
+                <!-- SERDES RX -->
+                <rect x="178" y="22" width="38" height="46" rx="1" stroke="#0077FF" stroke-width="0.8"/>
+                <text x="197" y="42" font-size="5" fill="#0077FF" text-anchor="middle" font-family="monospace">SERDES</text>
+                <text x="197" y="51" font-size="4.5" fill="#0077FF" text-anchor="middle" font-family="monospace">RX</text>
+                <!-- Eye diagram (mini) -->
+                <path d="M226 45 Q234 31 242 45 Q234 59 226 45Z" stroke="#00FFB2" stroke-width="0.7" fill="rgba(0,255,178,0.05)"/>
+                <line x1="222" y1="45" x2="246" y2="45" stroke="#444" stroke-width="0.3" stroke-dasharray="1,1"/>
+                <line x1="234" y1="33" x2="234" y2="57" stroke="#444" stroke-width="0.3" stroke-dasharray="1,1"/>
+                <text x="234" y="68" font-size="4" fill="#444" text-anchor="middle" font-family="monospace">EYE</text>
+                <!-- Stack-up layers indicator -->
+                <line x1="5"   y1="80" x2="216" y2="80" stroke="#222" stroke-width="0.4"/>
+                <text x="112" y="88" font-size="4" fill="#444" text-anchor="middle" font-family="monospace">8-LAYER CONTROLLED IMPEDANCE STACK-UP</text>
+                <!-- Speed label -->
+                <text x="112" y="14" font-size="5.5" fill="#00FFB2" text-anchor="middle" font-family="monospace">10 Gbps SerDes</text>
+              </svg>
+            </div>
+
+            <h3 class="project-title">10 Gbps Signal Integrity Analysis</h3>
+            <p class="project-desc">
+              High-speed PCB design for 10 Gbps differential signaling. Via optimization,
+              controlled impedance routing, and return path analysis to achieve
+              wide-open eye diagrams at the receiver.
+            </p>
+
+            <div class="project-specs">
+              <div class="spec-row">
+                <span class="spec-key">DATA RATE</span>
+                <span class="spec-val">10 Gbps NRZ SerDes</span>
+              </div>
+              <div class="spec-row">
+                <span class="spec-key">IMPEDANCE</span>
+                <span class="spec-val">100 Ω diff ±5%</span>
+              </div>
+              <div class="spec-row">
+                <span class="spec-key">EYE HEIGHT</span>
+                <span class="spec-val">&gt;200 mV @ receiver</span>
+              </div>
+              <div class="spec-row">
+                <span class="spec-key">STACK-UP</span>
+                <span class="spec-val">8-layer controlled-Z</span>
+              </div>
+            </div>
+
+            <div class="project-chips">
+              <span class="chip">Altium</span>
+              <span class="chip">HyperLynx</span>
+              <span class="chip">SerDes</span>
+              <span class="chip">SI / PI</span>
+              <span class="chip">Eye Diagram</span>
+            </div>
+          </article>
+
+        </div><!-- /projects-grid -->
+      </div>
+    </section>
+  </div>
+
+
+  <!-- ========================================================
+       CONTACT
+  ======================================================== -->
+  <div id="contact-bg">
+    <section id="contact">
+      <div class="section-wrap">
+        <header class="section-header reveal">
+          <span class="section-num">03</span>
+          <h2 class="section-title">CONTACT</h2>
+        </header>
+
+        <div class="contact-grid">
+
+          <!-- Left: heading + links -->
+          <div class="reveal">
+            <h3 class="contact-heading">
+              ESTABLISH<br>
+              <span class="em">CONNECTION</span>
+            </h3>
+            <p class="contact-sub">
+              Building something that needs precise hardware design? Open to contract
+              work, full-time roles, and interesting engineering problems.
+            </p>
+
+            <nav class="contact-links" aria-label="Contact links">
+              <a href="mailto:christiansactualbusiness@gmail.com" class="c-link">
+                <span class="c-label">// EMAIL</span>
+                <span class="c-value">christiansactualbusiness@gmail.com</span>
+                <span class="c-icon" aria-hidden="true">→</span>
+              </a>
+              <a href="https://github.com/shmuffy" target="_blank" rel="noopener" class="c-link">
+                <span class="c-label">// GITHUB</span>
+                <span class="c-value">github.com/shmuffy</span>
+                <span class="c-icon" aria-hidden="true">→</span>
+              </a>
+              <a href="https://linkedin.com/in/christiankim" target="_blank" rel="noopener" class="c-link">
+                <span class="c-label">// LINKEDIN</span>
+                <span class="c-value">linkedin.com/in/christiankim</span>
+                <span class="c-icon" aria-hidden="true">→</span>
+              </a>
+            </nav>
+          </div>
+
+          <!-- Right: terminal block -->
+          <div class="terminal reveal d2">
+            <div class="terminal-bar">
+              <div class="t-dot" aria-hidden="true"></div>
+              <div class="t-dot" aria-hidden="true"></div>
+              <div class="t-dot" aria-hidden="true"></div>
+              <span class="terminal-title">CONTACT_TERMINAL v1.0</span>
+            </div>
+            <div class="terminal-body" aria-label="Terminal showing contact information">
+              <div class="t-line">
+                <span class="t-prompt">~$</span>
+                <span class="t-cmd">ping christian.kim --mode=work</span>
+              </div>
+              <div class="t-line">
+                <span class="t-out">PINGING christian.kim [available] ···</span>
+              </div>
+              <div class="t-line">
+                <span class="t-out">STATUS  : ONLINE · response &lt; 24h</span>
+              </div>
+              <div class="t-line">
+                <span class="t-out">DOMAIN  : circuit, embedded, pcb</span>
+              </div>
+              <div class="t-line">
+                <span class="t-out">TIMEZONE: US · async-friendly</span>
+              </div>
+              <div class="t-line" style="margin-top:12px">
+                <span class="t-prompt">~$</span>
+                <span class="t-cmd">open mailto:christiansactualbusiness@gmail.com</span>
+              </div>
+              <div class="t-line">
+                <span class="t-out">Launching mail client ···</span>
+              </div>
+              <div class="t-line" style="margin-top:12px">
+                <span class="t-prompt">~$</span>
+                <span class="t-cursor" aria-hidden="true"></span>
+              </div>
+            </div>
+          </div>
+
+        </div><!-- /contact-grid -->
+      </div>
+    </section>
+  </div>
+
+</main><!-- /site -->
+
+
+<!-- ============================================================
+     FOOTER
+============================================================ -->
+<footer role="contentinfo">
+  <span class="footer-l">© 2026 CHRISTIAN KIM · EE</span>
+  <span class="footer-r">MICROGRAPHICS DESIGN SYSTEM · BUILD 01</span>
+</footer>
+
+
+<!-- ============================================================
+     SCRIPTS
+============================================================ -->
+<script src="js/loader.js"></script>
+<script src="js/main.js"></script>
+
+</body>
+</html>
