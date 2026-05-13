@@ -25,6 +25,8 @@ export interface Project {
   specs: SpecItem[];
   tags: string[];
   links: ProjectLink[];
+  /** optional WIP / status note shown beneath the blurb */
+  progress?: { stamp: string; body: string };
 }
 
 export const projects: Project[] = [
@@ -74,5 +76,10 @@ export const projects: Project[] = [
       { label: "Repo", href: "#", glyph: "↗", disabled: true },
       { label: "Notes", href: "#", glyph: "↗", disabled: true },
     ],
+    progress: {
+      stamp: "STATUS — IN PROGRESS · SCHEMATIC NEAR COMPLETE · EARLY LAYOUT",
+      body:
+        "Built on and off, continued in free time. In the meantime, my day-to-day RF/SDR practice runs on a HackRF Pro through GNU Radio — capturing and demodulating signals.",
+    },
   },
 ];

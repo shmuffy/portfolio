@@ -168,10 +168,14 @@ function projectHtml(p: Project): string {
       return gutterRow(String(i + 1), `${s.k.toUpperCase()} — ${s.v}`, "·");
     })
     .join("");
+  const progressBlock = p.progress
+    ? `${stampLine(p.progress.stamp)}<p>${esc(p.progress.body)}</p>`
+    : "";
   return `<div class="block">
     ${stampLine(`[${p.badge}] · ${p.span}`)}
     ${stampLine(p.title, true)}
     <p class="lede">${esc(blurbs[p.schematic])}</p>
+    ${progressBlock}
     ${figure(p.schematic)}
     ${specRows}
     ${stampLine(p.tags.join(" · "))}
