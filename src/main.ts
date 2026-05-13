@@ -2,7 +2,7 @@ import "./style.css";
 
 import { nav } from "./components/nav";
 import { about } from "./components/about";
-import { workSection, projectsSection } from "./components/work";
+import { desktopSection } from "./components/desktop";
 import { contactSection } from "./components/contact";
 import { initReveal } from "./lib/reveal";
 import { initScrollSpy } from "./lib/scrollspy";
@@ -11,7 +11,7 @@ import { initLoadingCard } from "./lib/loadingcard";
 import { initInkReveal } from "./lib/inkreveal";
 import { initFlipHint } from "./lib/fliphint";
 import { initCoffeeChat } from "./lib/coffeechat";
-import { initPcbMorph } from "./lib/pcbmorph";
+import { initDesktop } from "./lib/desktop";
 
 const app = document.querySelector<HTMLDivElement>("#app");
 
@@ -20,8 +20,7 @@ if (app) {
     ${nav()}
     <main class="stack" id="main">
       ${about()}
-      ${workSection()}
-      ${projectsSection()}
+      ${desktopSection()}
       ${contactSection()}
     </main>
   `;
@@ -33,7 +32,7 @@ if (app) {
   initLoadingCard();
   initFlipHint();
   initCoffeeChat();
-  initPcbMorph();
+  initDesktop();
 
   // content is injected after parse, so a deep link (e.g. /#work) won't have
   // scrolled to anything yet — do it now that the targets exist

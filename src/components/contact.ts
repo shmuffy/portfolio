@@ -18,7 +18,7 @@ function externalLine(label: string, l: SocialLink | undefined, aria: string): s
 
 export function contactSection(): string {
   return `<section class="block-section" id="contact" aria-label="Contact">
-    ${sectionOpen("04", "Contact")}
+    ${sectionOpen("03", "Contact")}
     <div class="block reveal">
       ${externalLine("EMAIL", find("email"), "Email Christian")}
       ${externalLine("LINKEDIN", find("linkedin"), "Christian Kim on LinkedIn")}

@@ -1,7 +1,6 @@
 import { experience, type Role } from "../data/experience";
 import { projects, type Project, type ProjectLink } from "../data/projects";
-import { links } from "../data/site";
-import { dotline, emphasize, esc, gutterRow, sectionOpen, stampLine } from "./micro";
+import { emphasize, esc, gutterRow, stampLine } from "./micro";
 import pcbBmsUrl from "../assets/pcb-bms.png";
 import pcbEloadUrl from "../assets/pcb-eload.png";
 import pcbSensorHubUrl from "../assets/pcb-sensorhub.png";
@@ -25,19 +24,21 @@ const lead: Record<string, string> = {
     "Developed the **400 V pack BMS PCB** — STM32 with a BQ76PLQ1 stacked cell monitor — plus an STM32F405 vehicle sensor hub.",
 };
 
-function roleEntry(r: Role, i: number): string {
-  const sep = i > 0 ? dotline() : "";
-  return `${sep}<div class="block reveal">
-    ${stampLine(r.mod, true)}
+function roleHtml(r: Role): string {
+  const extraBullets = r.points
+    .slice(1)
+    .map((p) => `<p>${emphasize(p)}</p>`)
+    .join("");
+  return `<div class="block">
     ${stampLine(r.org, true)}
     ${stampLine(r.role)}
     ${stampLine(r.unit + " · " + r.location + " · " + r.span)}
     <p>${emphasize(lead[r.mod] ?? r.points[0])}</p>
+    ${extraBullets}
     ${stampLine(r.tags.join(" · "))}
-  </div>${roleBoards[r.mod] ?? ""}`;
+  </div>`;
 }
 
-/** etched board renders that sit under specific role blocks. */
 const roleBoards: Record<string, string> = {
   "MOD-01": boardFigure(
     pcbCutieUrl,
@@ -105,15 +106,6 @@ function figure(schematic: Project["schematic"]): string {
   return `<div class="figure">${figs}${out}</div>`;
 }
 
-/** a real (raster) board render — etched to ink-on-bone line-work. Lives as a
-    sibling of the narrow project .block so it can be wider than --measure.
-
-    If `glb` is given, the flat render becomes interactive: clicking it tilts the
-    image back and cross-fades into a drag-orbit 3D model (the GLB loads on click;
-    three is in a lazy chunk reached only via dynamic import in pcbmorph.ts). The
-    `.reveal` stays on the outer .figure wrapper (initReveal observes it); the
-    click target is the inner native <button>, which keeps the `.figure--board img`
-    styling on the flat render. */
 function boardFigure(
   src: string,
   w: number,
@@ -125,11 +117,9 @@ function boardFigure(
   const media = glb
     ? `<button type="button" class="pcb-morph" style="aspect-ratio:${w}/${h}" data-glb="${glb}" aria-label="${esc("Explore this PCB layout as an interactive 3D model")}"><img class="pcb-morph-flat" src="${src}" width="${w}" height="${h}" loading="lazy" decoding="async" alt="${esc(alt)}"></button>`
     : `<img src="${src}" width="${w}" height="${h}" loading="lazy" decoding="async" alt="${esc(alt)}">`;
-  return `<div class="figure figure--board reveal">${media}${stampLine(glb ? `${cap} · CLICK TO EXPLORE IN 3D` : cap)}</div>`;
+  return `<div class="figure figure--board">${media}${stampLine(glb ? `${cap} · CLICK TO EXPLORE IN 3D` : cap)}</div>`;
 }
 
-/** both boards from PROJ-01 — etched layouts, FIG.3 (e-load) then FIG.4 (BMS),
-    mirroring FIG.1 / FIG.2 above. Both are click-to-explore-in-3D. */
 function projectBoards(): string {
   return (
     boardFigure(
@@ -151,8 +141,6 @@ function projectBoards(): string {
   );
 }
 
-/* ---- condensed project blurbs (≤ ~28 words) ------------------------------- */
-
 const blurbs: Record<Project["schematic"], string> = {
   "bms-load":
     "Bench-grade MOSFET linear electronic load plus a companion 10-cell Li-ion BMS — design, layout, firmware and validation, end to end.",
@@ -160,14 +148,10 @@ const blurbs: Record<Project["schematic"], string> = {
     "HackRF-class SDR around the AD9364 transceiver and an Artix-7 FPGA — custom power tree, clock fanout, high-speed differential routing, Python IQ model.",
 };
 
-/* ---- spec selection (3–4 most telling) ------------------------------------ */
-
 const keySpecs: Record<Project["schematic"], number[]> = {
   "bms-load": [1, 2, 4, 6],
   "fpga-sdr": [0, 1, 2, 5],
 };
-
-/* ---- project links -------------------------------------------------------- */
 
 function projectLink(l: ProjectLink): string {
   const glyph = l.glyph ?? "↗";
@@ -177,17 +161,14 @@ function projectLink(l: ProjectLink): string {
   return `<a href="${esc(l.href)}" target="_blank" rel="noopener">${esc(l.label)} ${esc(glyph)}</a>`;
 }
 
-/* ---- project entry -------------------------------------------------------- */
-
-function projectEntry(p: Project): string {
+function projectHtml(p: Project): string {
   const specRows = keySpecs[p.schematic]
     .map((idx, i) => {
       const s = p.specs[idx];
       return gutterRow(String(i + 1), `${s.k.toUpperCase()} — ${s.v}`, "·");
     })
     .join("");
-  return `<div class="block reveal">
-    ${stampLine(p.proj, true)}
+  return `<div class="block">
     ${stampLine(`[${p.badge}] · ${p.span}`)}
     ${stampLine(p.title, true)}
     <p class="lede">${esc(blurbs[p.schematic])}</p>
@@ -198,26 +179,16 @@ function projectEntry(p: Project): string {
   </div>`;
 }
 
-/* ---- sections ------------------------------------------------------------- */
+/* ---- detail content exported for the desktop modal ----------------------- */
 
-export function workSection(): string {
-  return `<section class="block-section" id="work" aria-label="Work">
-    ${sectionOpen("02", "Work")}
-    ${experience.map(roleEntry).join("")}
-  </section>`;
+export function roleDetailContent(mod: string): string | null {
+  const r = experience.find((x) => x.mod === mod);
+  if (!r) return null;
+  return roleHtml(r) + (roleBoards[r.mod] ?? "");
 }
 
-export function projectsSection(): string {
-  const gh = links.find((l) => l.key === "github");
-  const ghLine = gh
-    ? `<p class="linkline"><a href="${esc(gh.href)}" target="_blank" rel="noopener">MORE — ${esc(gh.display)} →</a></p>`
-    : "";
-
-  return `<section class="block-section" id="projects" aria-label="Projects">
-    ${sectionOpen("03", "Projects")}
-    ${projects
-      .map((p) => projectEntry(p) + (p.schematic === "bms-load" ? projectBoards() : ""))
-      .join(dotline())}
-    ${ghLine}
-  </section>`;
+export function projectDetailContent(proj: string): string | null {
+  const p = projects.find((x) => x.proj === proj);
+  if (!p) return null;
+  return projectHtml(p) + (p.schematic === "bms-load" ? projectBoards() : "");
 }
