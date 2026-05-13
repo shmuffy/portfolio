@@ -9,6 +9,7 @@ import pcbCutieUrl from "../assets/pcb-cutie.png";
 import bmsGlb from "../assets/BMS.glb?url";
 import eloadGlb from "../assets/E-Load.glb?url";
 import cutieGlb from "../assets/cutie.glb?url";
+import sensorhubGlb from "../assets/sensorhub.glb?url";
 
 /* ---- experience: compact role entries ------------------------------------- */
 
@@ -52,6 +53,7 @@ const roleBoards: Record<string, string> = {
     716,
     "Monochrome line render of the STM32F405 vehicle sensor-hub PCB layout — routing, silkscreen, components, pads and board outline as ink linework.",
     "BOARD LAYOUT · STM32F405 SENSOR HUB · ALTIUM",
+    sensorhubGlb,
   ),
 };
 
