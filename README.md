@@ -1,68 +1,55 @@
 # Christian Kim — Portfolio
 
-Personal portfolio built in the **micrographics** design style.  
-Dark electric palette · Circuit-board micro-patterns · LDR-inspired loading animation.
+Personal portfolio site in the **micrographics** design language — a paper-white
+"engineering spec sheet" look: bold Archivo display type, JetBrains Mono labels,
+crop marks, dotted leaders, block-diagram schematics, one signal-orange accent.
 
----
+Built with **Vite + vanilla TypeScript** — no UI framework, static output.
 
-## How to push to GitHub
-
-Open **Terminal** (Mac) or **Command Prompt / Git Bash** (Windows), then run these commands one by one:
+## Develop
 
 ```bash
-# 1. Navigate to this folder
-cd ~/Desktop/micrographics
-
-# 2. Initialize git (skip if already initialized)
-git init
-
-# 3. Add the GitHub remote
-git remote add origin https://github.com/shmuffy/portfolio.git
-
-# 4. Stage all files
-git add .
-
-# 5. Commit
-git commit -m "feat: initial portfolio — micrographics design system"
-
-# 6. Push (set main branch)
-git push -u origin main
+npm install
+npm run dev          # http://localhost:5173
 ```
 
-> If you get a "repository already exists" error on step 3, skip it and go to step 4.
+## Build & preview
 
----
-
-## Enable GitHub Pages
-
-1. Go to **github.com/shmuffy/portfolio**
-2. Click **Settings → Pages**
-3. Under *Source*, select **Deploy from a branch**
-4. Choose branch: **main** · folder: **/ (root)**
-5. Click **Save**
-
-Your site will be live at: **https://shmuffy.github.io/portfolio**
-
----
-
-## File structure
-
-```
-portfolio/
-├── index.html          # Single-page site
-├── css/
-│   └── style.css       # Full design system (tokens, layout, animations)
-├── js/
-│   ├── loader.js       # Canvas loading animation (LDR-inspired)
-│   └── main.js         # Cursor, hero canvas, scroll reveals, tilt
-└── README.md
+```bash
+npm run build        # type-checks, then bundles to dist/
+npm run preview       # serve the production build locally
 ```
 
----
+## Editing content
 
-## Customization
+All copy lives in typed files under `src/data/` — no need to touch markup:
 
-- **Name / role** → edit the `<h1>` in `index.html` and the loader text constants in `loader.js`  
-- **Projects** → update the three `.project-card` sections and the inline SVG schematics  
-- **Color** → change `--accent` in `css/style.css` `:root` (currently `#00FFB2` electric teal)  
-- **LinkedIn URL** → update `href` in the contact section  
+| File | What it holds |
+| --- | --- |
+| `src/data/site.ts` | Name, role, status, social links, nav items, résumé filename |
+| `src/data/experience.ts` | The "Field Log" entries (clubs / labs / roles) |
+| `src/data/projects.ts` | The "Build Index" project cards + spec lists |
+| `src/data/skills.ts` | The "Inventory" skill groups |
+
+Section markup is in `src/components/*`; the design system is one file, `src/style.css`;
+reusable SVG bits (gauges, crosshairs, barcodes, schematic boxes) are in
+`src/components/micro.ts` and `src/components/projects.ts`.
+
+Replace `public/christian-kim-resume.pdf` to update the résumé link, and drop a
+`public/portrait.jpg` to fill the portrait slot in the About section (then point
+the `.portrait-slot` markup at it).
+
+## Deploy to GitHub Pages
+
+1. `npm run build` → produces `dist/`.
+2. Push `dist/` to the `gh-pages` branch (or use a GitHub Action), or set Pages to
+   serve from `/docs` and rename `dist` → `docs`.
+3. **Project page** (`username.github.io/portfolio`): set `base: '/portfolio/'` in
+   `vite.config.ts` before building. **User/root site**: leave `base: './'`.
+
+## Notes / TODO
+
+- Project repo + write-up links are placeholders (`#`, rendered disabled) — set real
+  URLs in `src/data/projects.ts`.
+- GitHub handle is set to `github.com/shmuffy` in `src/data/site.ts` — change if needed.
+- Reference inspiration lives in `reference/` (not bundled).

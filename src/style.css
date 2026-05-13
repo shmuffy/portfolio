@@ -1,0 +1,981 @@
+/* ============================================================================
+   CHRISTIAN KIM — PORTFOLIO
+   Design system: "Float / Stamp" (mg-8 language)
+   Warm grey paper · near-black warm ink · monochrome · JetBrains Mono only
+   ========================================================================== */
+
+/* ---- tokens ---------------------------------------------------------------- */
+:root {
+  --paper: #ddd8ca; /* warm bone cardstock — the Paul Allen card */
+  --paper-2: #d3cebf; /* rare inset / hairline-framed box fill */
+  --ink: #1a1916; /* near-black, warm — never pure #000 */
+  --ink-2: #4c4a44; /* secondary text (sparingly) */
+  --ink-faint: #918e86; /* gutter chars, fine print, leaders, inactive */
+  --hairline: #c6c2b6; /* the occasional 1px rule */
+
+  --maxw: 1080px;
+  --measure: 30rem; /* THE narrow content column ≈ 480px */
+
+  --nav-h: 3.5rem; /* slim sticky nav height (approx) */
+
+  --gap-xl: clamp(13rem, 32vh, 22rem); /* between major sections — the "void" */
+  --gap-l: clamp(6rem, 14vh, 10rem); /* between sub-blocks */
+  --gap-m: clamp(2.5rem, 6vh, 4rem);
+
+  --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", "Cascadia Mono",
+    Menlo, Consolas, monospace;
+  /* engraved-caps face for the landing card — the Paul Allen business card.
+     Copperplate Gothic (ships with MS Office on Windows / "Copperplate" on
+     macOS); falls back to a glyphic serif if it isn't installed. */
+  --font-engraved: "Copperplate Gothic Bold", "Copperplate Gothic Light",
+    "Copperplate Gothic", "Copperplate", "Bookman Old Style", "Big Caslon",
+    serif;
+
+  --fs: 0.8rem; /* ~12.8px — base, small & typewriter-even */
+  --fs-sm: 0.6875rem; /* ~11px — stamps, gutter chars, fine print */
+  --fs-name: clamp(0.9rem, 1.7vw, 1.3rem); /* the one modest step-up — the name */
+
+  --ls: 0.07em; /* default letter-spacing on body lines */
+  --ls-stamp: 0.2em; /* tiny caps stamps / IDs */
+  --lh: 1.9; /* airy / receipt */
+
+  --reveal-dist: 6px;
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* ---- reset ----------------------------------------------------------------- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  scroll-behavior: smooth;
+  scroll-padding-top: calc(var(--nav-h) + 0.5rem); /* clears the slim sticky nav on anchor jumps */
+}
+
+body {
+  font-family: var(--font-mono);
+  font-size: var(--fs);
+  line-height: var(--lh);
+  letter-spacing: var(--ls);
+  color: var(--ink);
+  /* Flat bone cardstock — tone-on-tone: the magic business card floats on the
+     same bone colour, separated only by elevation/shadow. */
+  background-color: var(--paper);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+img,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+ul {
+  list-style: none;
+}
+
+::selection {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+/* ---- focus / skip link ----------------------------------------------------- */
+:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}
+
+.skip-link {
+  position: fixed;
+  top: 8px;
+  left: 8px;
+  z-index: 1000;
+  padding: 0.5rem 0.9rem;
+  background: var(--ink);
+  color: var(--paper);
+  font-family: var(--font-mono);
+  font-size: var(--fs-sm);
+  letter-spacing: var(--ls-stamp);
+  text-transform: uppercase;
+  transform: translateY(-150%);
+  transition: transform 0.15s var(--ease);
+}
+.skip-link:focus {
+  transform: translateY(0);
+}
+
+/* ============================================================================
+   MASTHEAD / NAV — ultra-minimal, nearly invisible
+   ========================================================================== */
+header {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: var(--paper);
+}
+.nav {
+  /* full-bleed: hug the window edges, just a gutter — not the --maxw column */
+  min-height: var(--nav-h);
+  padding: 0.5rem clamp(1rem, 4vw, 3rem);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem 1.25rem;
+  flex-wrap: wrap;
+  font-family: var(--font-mono);
+  font-size: var(--fs-sm);
+  line-height: 1.4;
+  letter-spacing: var(--ls-stamp);
+  text-transform: uppercase;
+}
+.nav .nav-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5em;
+  color: var(--ink-faint);
+  white-space: nowrap;
+}
+.nav .nav-links {
+  display: flex;
+  align-items: center;
+  gap: 0.45em 0.75em;
+  flex-wrap: wrap;
+}
+.nav a {
+  color: var(--ink-faint);
+  white-space: nowrap;
+  transition: color 0.15s var(--ease);
+}
+.nav a:hover {
+  color: var(--ink);
+}
+.nav a[aria-current="true"] {
+  color: var(--ink);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
+}
+.nav .sep {
+  color: var(--ink-faint);
+  opacity: 0.5;
+}
+
+/* ============================================================================
+   PAGE FRAME / LAYOUT
+   ========================================================================== */
+#app {
+  position: relative;
+}
+
+main.stack {
+  position: relative;
+  max-width: var(--maxw);
+  margin-inline: auto;
+  padding-inline: clamp(1rem, 5vw, 3rem);
+  padding-bottom: clamp(4rem, 10vh, 9rem);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--gap-xl);
+}
+
+.block-section {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* THE landing card: a generous void with one small block floating in it,
+   sitting dead-centre in the first viewport — like Paul Allen's card,
+   or a symmetrical Wes Anderson frame. Equal air above and below. */
+#about {
+  /* the cast shadow (.card-shadow) is absolutely positioned against this */
+  position: relative;
+  min-height: calc(100svh - var(--nav-h));
+  justify-content: center;
+  /* the faintest upward bias so the name lands at (or a hair above) optical centre */
+  padding-bottom: clamp(0rem, 2vh, 1.5rem);
+}
+@supports not (height: 100svh) {
+  #about {
+    min-height: calc(100vh - var(--nav-h));
+  }
+}
+/* the title page already fills a screen — don't make the reader scroll a whole
+   extra void to reach Work; pull it up to a smaller gap (negative margin cancels
+   most of main.stack's --gap-xl) */
+#about + #work {
+  margin-top: calc(var(--gap-l) - var(--gap-xl));
+}
+
+/* The landing card is letterpressed (the Paul Allen card): every line is struck
+   into the bone stock in full warm ink — including the gutter digits and the
+   stamp under the name — sitting in a shallow press, with a lit lip of paper
+   catching light just below each stroke and a soft shade pooled along the upper
+   wall, so the type reads as part of the card, not printed on top of it. The
+   strokes are a touch heavier so the relief holds. Scoped to .card-front (see
+   the MAGIC CARD block at the bottom for the live rules); Work / Contact stay
+   flat with the faint gutter. */
+
+/* THE recurring unit: the small centered text block */
+.block {
+  max-width: var(--measure);
+  width: 100%;
+  font-family: var(--font-mono);
+  font-size: var(--fs);
+  line-height: var(--lh);
+  letter-spacing: var(--ls);
+  text-align: center;
+}
+.block + .block {
+  margin-top: var(--gap-l);
+}
+.block--narrow {
+  max-width: 24rem;
+}
+
+.block p {
+  font-size: var(--fs);
+  line-height: var(--lh);
+}
+.block a {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
+  text-decoration-color: var(--hairline);
+  transition: text-decoration-color 0.15s var(--ease), color 0.15s var(--ease);
+}
+.block a:hover {
+  text-decoration-color: var(--ink);
+}
+
+/* a deliberate blank line */
+.spacer {
+  user-select: none;
+}
+
+/* a line WITH gutter markers */
+.row {
+  display: grid;
+  grid-template-columns: 1.6em 1fr 1.6em;
+  align-items: baseline;
+  column-gap: 0.5em;
+}
+.row .g {
+  color: var(--ink-faint);
+  font-size: var(--fs-sm);
+}
+.row .g:first-child {
+  text-align: left;
+}
+.row .g:last-child {
+  text-align: right;
+}
+.row .t {
+  text-align: center;
+}
+
+/* the person's name — the ONE step-up; still mono */
+.name {
+  font-size: var(--fs-name);
+  letter-spacing: var(--ls-stamp);
+  text-transform: uppercase;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+/* tiny caps label / stamp */
+.stamp {
+  font-size: var(--fs-sm);
+  letter-spacing: var(--ls-stamp);
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+.stamp--ink {
+  color: var(--ink);
+}
+
+/* a centered short dotted leader on its own line */
+.dotline {
+  display: block;
+  width: clamp(7rem, 24%, 12rem);
+  margin: var(--gap-m) auto;
+  height: 0;
+  border-top: 1px dotted var(--hairline);
+}
+
+/* like .dotline but a solid hairline, even shorter — rare */
+.rule {
+  display: block;
+  width: 2.25rem;
+  margin: var(--gap-m) auto;
+  height: 0;
+  border-top: 1px solid var(--hairline);
+}
+
+/* the section opener unit: "ID — TITLE" stamp + dotline */
+.open {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  margin-bottom: var(--gap-m);
+}
+.open .dotline {
+  margin-bottom: 0;
+}
+
+/* at most ONE short centered paragraph per section that needs prose */
+.lede {
+  max-width: 24rem;
+  margin-inline: auto;
+  line-height: 1.9;
+}
+
+/* a single centered line of text links separated by " · " */
+.linkline {
+  font-size: var(--fs-sm);
+  letter-spacing: var(--ls-stamp);
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+.linkline a {
+  color: var(--ink-faint);
+  text-decoration: none;
+  transition: color 0.15s var(--ease);
+}
+.linkline a:hover,
+.linkline a:focus-visible {
+  color: var(--ink);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
+}
+.linkline .linkline-x {
+  color: var(--ink-faint);
+  opacity: 0.5;
+  text-decoration: line-through;
+  text-decoration-color: var(--hairline);
+}
+.linkline .sep {
+  opacity: 0.5;
+}
+
+/* a pared-down schematic container */
+.figure {
+  max-width: var(--measure);
+  margin: var(--gap-m) auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+.figure svg {
+  width: 100%;
+  height: auto;
+  margin-inline: auto;
+}
+.figure svg .stroke,
+.figure svg path,
+.figure svg line,
+.figure svg circle,
+.figure svg rect {
+  stroke: var(--ink);
+}
+.figure svg text {
+  font-family: var(--font-mono);
+  font-size: var(--fs-sm);
+  letter-spacing: 0.08em;
+  fill: var(--ink);
+}
+
+/* a real raster board render — wider than the narrow measure, hairline-framed.
+   The PNG is ink marks on a transparent ground, so it composites straight onto
+   the bone paper; multiply just keeps things honest if the asset ever changes
+   to opaque-on-white. */
+.figure--board {
+  max-width: min(100%, 46rem);
+  margin: var(--gap-m) auto;
+}
+.figure--board img {
+  width: 100%;
+  height: auto;
+  border: 1px solid var(--hairline);
+  mix-blend-mode: multiply;
+}
+
+/* a single mono flow line: A → B → C */
+.flowline {
+  font-size: var(--fs-sm);
+  letter-spacing: 0.1em;
+  line-height: 2;
+  max-width: var(--measure);
+  margin-inline: auto;
+}
+.flowline .arr,
+.flowline .sep {
+  color: var(--ink-faint);
+}
+
+/* footer back-to-top */
+.to-top {
+  display: inline-block;
+  font-size: var(--fs);
+  color: var(--ink-faint);
+  transition: color 0.15s var(--ease);
+}
+.to-top:hover,
+.to-top:focus-visible {
+  color: var(--ink);
+}
+
+/* hero scroll cue — sits in the emptiness below the card */
+.scroll-hint {
+  display: block;
+  /* sit low and quiet in the void — don't crowd the card */
+  margin-top: var(--gap-l);
+  text-align: center;
+  font-size: var(--fs);
+  color: var(--ink-faint);
+  transition: color 0.15s var(--ease);
+}
+.scroll-hint:hover,
+.scroll-hint:focus-visible {
+  color: var(--ink);
+}
+
+/* footer is a sibling of <main>, not inside the .stack flex flow */
+footer.block-section {
+  max-width: var(--maxw);
+  margin-inline: auto;
+  margin-top: var(--gap-xl);
+  padding-inline: clamp(1rem, 5vw, 3rem);
+  padding-bottom: clamp(4rem, 10vh, 9rem);
+}
+#app > footer,
+main.stack + footer {
+  margin-top: var(--gap-xl);
+}
+
+/* ============================================================================
+   REVEAL ANIMATION (only when JS is present; off under reduced-motion)
+   ========================================================================== */
+.js .reveal {
+  opacity: 0;
+  transform: translateY(var(--reveal-dist));
+  transition: opacity 0.6s var(--ease), transform 0.6s var(--ease);
+}
+.reveal.is-in {
+  opacity: 1;
+  transform: none;
+}
+.reveal.d1 {
+  transition-delay: 0.06s;
+}
+.reveal.d2 {
+  transition-delay: 0.12s;
+}
+
+/* ============================================================================
+   RESPONSIVE — already one centered column; just keep it tidy at 320px
+   ========================================================================== */
+@media (max-width: 480px) {
+  #app,
+  main.stack,
+  footer.block-section {
+    padding-inline: 1rem;
+  }
+  .nav {
+    padding-inline: 1rem;
+    justify-content: center;
+  }
+  /* a hair more headroom on short phones so the card never clips */
+  #about {
+    padding-block: clamp(3rem, 12vh, 6rem);
+  }
+  .flowline {
+    word-break: break-word;
+  }
+}
+
+/* ============================================================================
+   REDUCED MOTION
+   ========================================================================== */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+  }
+  .js .reveal {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ============================================================================
+   PRINT
+   ========================================================================== */
+@media print {
+  header,
+  .skip-link,
+  .to-top {
+    display: none !important;
+  }
+  body {
+    background: #fff;
+  }
+  main.stack {
+    gap: 3rem;
+  }
+  #about {
+    min-height: 0;
+    padding-block: 0;
+  }
+  .scroll-hint {
+    display: none !important;
+  }
+  .figure--board img {
+    mix-blend-mode: normal;
+  }
+}
+
+/* ============================================================================
+   COFFEE CHAT — Harry-Potter-style fade reveal of contact links
+   (appended block — does not touch any rule above)
+   "COFFEE CHAT?" lives on the card BACK; tapping it fades in EMAIL / LINKEDIN /
+   RESUME as finished links — opacity 0→1, a brief ink-resolve blur(4px)→blur(0)
+   and a slight rise (translateY 6px→0), each line ~0.7s, staggered ~0.18s apart
+   off the per-line --coffee-i index, like ink resolving on a page of a spellbook.
+   The lines are struck into the bone stock in engraved Copperplate, like the card
+   front. The list is a normal-flow child of .card-back, sitting below the
+   (fixed-position) trigger so revealing/collapsing it doesn't nudge the button.
+   Tapping again dissolves them back out. Reduced motion → instant show/hide.
+   ========================================================================== */
+
+/* the trigger: a real <button> styled to read exactly like the .block link */
+.coffee-trigger {
+  font: inherit;
+  letter-spacing: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
+  text-decoration-color: var(--hairline);
+  transition: text-decoration-color 0.15s var(--ease), color 0.15s var(--ease);
+}
+.coffee-trigger:hover {
+  text-decoration-color: var(--ink);
+}
+
+/* the back <button> isn't [hidden] in markup (it sits on the inert-when-front
+   back face). This [hidden] selector stays as a harmless guard. */
+.coffee-trigger[hidden] {
+  display: none;
+}
+
+/* revealed lines container — a normal-flow child of .card-back, sitting just
+   below the trigger button (which is fixed ~14% down the back face, so the
+   button doesn't move when the lines reveal/collapse); centred on the card */
+.coffee-lines {
+  width: 100%;
+  margin-top: 0.75rem;
+  text-align: center;
+}
+.coffee-lines[hidden] {
+  display: none;
+}
+/* the container can also gently fade with the lines */
+.js .coffee-lines {
+  transition: opacity 0.5s var(--ease);
+}
+
+/* each finished line — struck into the stock in engraved Copperplate, small &
+   quiet; same letterpress relief as #about .block. Starts in the hidden
+   "un-resolved ink" state (invisible, blurred, slightly low); .is-revealed on
+   the container transitions it in, staggered by --coffee-i (set in JS). */
+.coffee-line {
+  font-family: var(--font-engraved);
+  font-weight: 500;
+  font-size: var(--fs-sm);
+  letter-spacing: 0.05em; /* Copperplate runs wide */
+  line-height: 1.9;
+  word-break: break-word;
+  text-shadow:
+    0 1px 0.5px rgba(255, 255, 255, 0.6), /* lit lower lip of the press */
+    0 -1px 1px rgba(26, 25, 22, 0.22); /* shade along the upper wall */
+  opacity: 0;
+  filter: blur(4px);
+  transform: translateY(6px);
+}
+/* ink resolving on the page — opacity in, blur clearing, a slight settle down */
+.coffee-lines.is-revealed .coffee-line {
+  opacity: 1;
+  filter: blur(0);
+  transform: none;
+  transition:
+    opacity 0.7s var(--ease) calc(var(--coffee-i, 0) * 0.18s),
+    filter 0.7s var(--ease) calc(var(--coffee-i, 0) * 0.18s),
+    transform 0.7s var(--ease) calc(var(--coffee-i, 0) * 0.18s);
+}
+.coffee-label {
+  letter-spacing: 0.08em; /* a touch wider on the label */
+  color: var(--ink-faint);
+}
+.coffee-sep {
+  color: var(--ink-faint);
+  opacity: 0.6;
+}
+.coffee-val {
+  color: var(--ink);
+}
+a.coffee-val {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
+  text-decoration-color: var(--hairline);
+  transition: text-decoration-color 0.15s var(--ease);
+}
+a.coffee-val:hover,
+a.coffee-val:focus-visible {
+  text-decoration-color: var(--ink);
+}
+
+/* collapse: the ink fades and sinks back into the paper — like writing vanishing
+   in a spellbook. BEHAVIOR removes .is-revealed + adds .is-dissolving, waits
+   ~700ms (transitionend, with a ~750ms fallback), then clears + hides.
+   transition (not keyframes) so a transitionend listener fires; uniform fade out
+   on the way out — no per-line stagger. */
+.coffee-lines.is-dissolving {
+  opacity: 0;
+  transition: opacity 0.7s var(--ease);
+}
+.coffee-lines.is-dissolving .coffee-line {
+  opacity: 0;
+  filter: blur(3px);
+  transform: translateY(3px);
+  text-shadow: 0 0 0 rgba(255, 255, 255, 0), 0 0 0 rgba(26, 25, 22, 0);
+  transition:
+    opacity 0.7s var(--ease),
+    filter 0.7s var(--ease),
+    transform 0.7s var(--ease),
+    text-shadow 0.7s var(--ease);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* fade reveal & dissolve are both instant — links just pop in/out (the JS
+     hides the box outright in this mode, so the lines stay visible until then) */
+  .coffee-line,
+  .coffee-lines.is-revealed .coffee-line,
+  .coffee-lines.is-dissolving,
+  .coffee-lines.is-dissolving .coffee-line {
+    opacity: 1;
+    filter: none;
+    transform: none;
+    transition: none;
+  }
+}
+
+/* ----- front ink reveal ----------------------------------------------------
+   The card-front lines "write themselves in" like invisible ink surfacing on
+   parchment: each .ink-line starts blurred + invisible + masked off, and on
+   .is-written (added by inkreveal.ts after the card-stage entrance) a soft
+   left→right mask wipe brings it in, blur settling to crisp, staggered by the
+   --ink-i index set in the markup. The mask is two linear-gradients with the
+   same stop structure so they interpolate (Chromium / WebKit / Firefox).
+   (The card-back coffee lines have their own fade reveal — see the COFFEE CHAT
+   block above.)
+
+   .ink-line CSS is .js-scoped — no-JS just shows the text in normal flow.
+   --------------------------------------------------------------------------- */
+.js .ink-line {
+  -webkit-mask-image: linear-gradient(
+    to right,
+    #000 0%,
+    #000 0%,
+    transparent 0%
+  );
+  mask-image: linear-gradient(to right, #000 0%, #000 0%, transparent 0%);
+  filter: blur(2px);
+  opacity: 0;
+}
+.js .ink-line.is-written {
+  -webkit-mask-image: linear-gradient(
+    to right,
+    #000 0%,
+    #000 100%,
+    transparent 100%
+  );
+  mask-image: linear-gradient(to right, #000 0%, #000 100%, transparent 100%);
+  filter: blur(0);
+  opacity: 1;
+  transition:
+    -webkit-mask-image 0.6s var(--ease) calc(var(--ink-i, 0) * 0.12s),
+    mask-image 0.6s var(--ease) calc(var(--ink-i, 0) * 0.12s),
+    filter 0.5s var(--ease) calc(var(--ink-i, 0) * 0.12s + 0.06s),
+    opacity 0.25s var(--ease) calc(var(--ink-i, 0) * 0.12s);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .js .ink-line,
+  .js .ink-line.is-written {
+    -webkit-mask-image: none;
+    mask-image: none;
+    filter: none;
+    opacity: 1;
+    transition: none;
+  }
+}
+
+/* ============================================================================
+   MAGIC CARD — the 3D draggable / flippable business card (Agent A)
+
+   6 nested transform layers so the 3D transforms never clobber each other:
+     #about[position:relative]
+       .card-shadow[aria-hidden]   ← fake floor shadow; NOT in the 3D chain; JS writes --shadow-sx/tx/ty + reads --drag-x/y
+       .card-stage                 ← perspective camera; entrance only (opacity/scale), no live transform
+         .card-drag                ← free-drag translate: translate(var(--drag-x), var(--drag-y)); JS writes those, instant (no lag)
+           .card-tilt              ← parallax tilt: rotateX(var(--tilt-x)) rotateY(var(--tilt-y)); JS writes those
+             .card-float           ← idle bob (pure CSS, off under reduced-motion)
+               .card[data-face]    ← rotateY(var(--flip)); transition .7s ALWAYS on; JS writes --flip, toggles .is-dragging / .is-entering
+                 .card-face.card-front   ← the letterpressed 4 .ink-line <p>s; bone + paper.png fibre (multiply blend)
+                 .card-face.card-back    ← button.coffee-trigger + #coffee-lines (Agent B re-anchors .coffee-lines here)
+
+   State classes (see card3d.ts for the contract): .card[data-face="front"|"back"],
+   .card.is-dragging (cursor swap only — the flip transition stays live), .card.is-entering (toggled by inkreveal),
+   .card-back[inert][aria-hidden].
+   CSS custom props JS writes: --flip on .card; --drag-x/--drag-y on .card-drag (also read by .card-shadow);
+   --tilt-x/--tilt-y on .card-tilt; --shadow-sx/--shadow-tx/--shadow-ty on .card-shadow.
+
+   Drag model: pointer-drag only TRANSLATES the card (via .card-drag), clamped so it stays inside #about; it stays put
+   on release (no spring-back, no inertia). A horizontal drag past a threshold triggers one clean animated rotateY 0↔180,
+   then rebases. No pointer-driven rotation (it used to blow up near 90° from getBoundingClientRect foreshortening).
+   ========================================================================== */
+
+/* the "camera" — gives the rotateY()s their perspective foreshortening */
+.card-stage {
+  perspective: 1100px;
+  perspective-origin: 50% 45%;
+  width: min(28rem, 92vw);
+}
+/* card-stage appears (opacity + a small scale-up); inkreveal removes .is-entering next frame */
+.card-stage.is-entering {
+  opacity: 0;
+  transform: scale(0.96);
+  transition: opacity 0.4s var(--ease), transform 0.4s var(--ease);
+}
+
+/* free-drag layer — JS writes --drag-x / --drag-y; tracks the pointer 1:1, no lag */
+.card-drag {
+  transform: translate(var(--drag-x, 0px), var(--drag-y, 0px));
+  transform-style: preserve-3d;
+  transition: transform 0s;
+}
+
+/* parallax tilt layer — JS writes --tilt-x / --tilt-y on hover */
+.card-tilt {
+  transform: rotateX(var(--tilt-x, 0deg)) rotateY(var(--tilt-y, 0deg));
+  transition: transform 0.3s var(--ease);
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
+/* faint idle bob — animate transform directly (no @property dependency) */
+.card-float {
+  transform-style: preserve-3d;
+  animation: card-bob 6s var(--ease) infinite;
+}
+@keyframes card-bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+/* the card itself — rotateY(var(--flip)); the .7s transition ALWAYS animates
+   the flip (drag is translate-only and lives on .card-drag, instant by default) */
+.card {
+  width: 100%;
+  min-height: 17rem; /* tunable — content-driven, not strict credit-card ratio */
+  position: relative;
+  transform-style: preserve-3d;
+  transform: rotateY(var(--flip, 0deg));
+  transition: transform 0.7s var(--ease);
+  cursor: grab;
+  touch-action: none; /* we own both axes for free dragging */
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+.card.is-dragging {
+  cursor: grabbing; /* the .7s flip transition stays live; drag-translate is on .card-drag */
+}
+
+/* the two faces — absolutely stacked, back-face culled so only one shows.
+   Bone cardstock with a tileable paper-fibre texture multiplied over it (the
+   original page texture, now scoped to the card faces only, scaled down so the
+   grain reads at card size); border-radius clips it to the rounded corners. */
+.card-face {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(1.25rem, 4vw, 2rem);
+  background-color: var(--paper);
+  background-image: url("./assets/paper.png");
+  background-repeat: repeat;
+  background-size: 300px auto;
+  background-blend-mode: multiply;
+  border-radius: 12px;
+  /* the *stock edge* — a hairline + a lit upper lip; NOT the cast shadow */
+  box-shadow:
+    0 0 0 1px rgba(26, 25, 22, 0.08) inset,
+    0 1px 0 rgba(255, 255, 255, 0.5) inset;
+  transform: translateZ(0);
+}
+
+/* front face = the letterpressed landing card (migrated from #about .block) */
+.card-front {
+  font-family: var(--font-engraved);
+  font-weight: 500;
+  /* Copperplate runs wide — ease the tracking back from the mono default */
+  letter-spacing: 0.04em;
+  text-shadow:
+    0 1px 0.5px rgba(255, 255, 255, 0.6), /* light on the lower lip of the press */
+    0 -1px 1px rgba(26, 25, 22, 0.22); /* shade along the upper wall of the press */
+}
+.card-front .name {
+  font-weight: 700;
+  letter-spacing: 0.12em;
+}
+.card-front .stamp,
+.card-front .row .g {
+  color: var(--ink);
+}
+
+/* back face = pre-rotated 180°; the COFFEE CHAT button sits ~14% down so the
+   contact lines fill below it without nudging the button when they reveal */
+.card-back {
+  transform: rotateY(180deg);
+  justify-content: flex-start;
+  padding-top: clamp(2rem, 14%, 3.5rem);
+}
+
+/* fake floor shadow — a blurred dark ellipse sized to the card (not the hero),
+   sitting a touch below the card's centre; follows the card's free-drag offset
+   (--drag-x/y), JS squashes it horizontally as the card turns edge-on
+   (--shadow-sx) and nudges it opposite the parallax tilt (--shadow-tx/ty) */
+.card-shadow {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: min(22rem, 80vw); /* ~78% of the card's min(28rem,92vw) — tracks the card, not #about */
+  height: 3.75rem;
+  transform: translate(-50%, calc(-50% + 7.5rem)) /* drop to just under the ~17rem card */
+    translate(var(--drag-x, 0px), var(--drag-y, 0px)) /* follow the dragged card */
+    translate(var(--shadow-tx, 0px), var(--shadow-ty, 0px))
+    scaleX(var(--shadow-sx, 1));
+  background: radial-gradient(
+    ellipse at center,
+    rgba(26, 25, 22, 0.28) 0%,
+    rgba(26, 25, 22, 0.13) 45%,
+    rgba(26, 25, 22, 0) 72%
+  );
+  filter: blur(16px);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: -1;
+  transition: transform 0.12s var(--ease), opacity 0.7s var(--ease);
+}
+
+/* reduced motion: no float / tilt / entrance; instant flip; static shadow that
+   still follows the dragged card (--drag-x/y), just no parallax squash/nudge.
+   The drag-translate (.card-drag) keeps working — it's direct manipulation. */
+@media (prefers-reduced-motion: reduce) {
+  .card {
+    transition: none;
+  }
+  .card-stage,
+  .card-tilt,
+  .card-float {
+    transition: none;
+    transform: none !important;
+    animation: none !important;
+  }
+  .card-shadow {
+    transition: none;
+    animation: none;
+    transform: translate(-50%, calc(-50% + 7.5rem))
+      translate(var(--drag-x, 0px), var(--drag-y, 0px));
+  }
+  .card-stage.is-entering {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* print: just the readable front, flat */
+@media print {
+  .card {
+    transform: none;
+    box-shadow: none;
+  }
+  .card-shadow {
+    display: none;
+  }
+  .card-back {
+    display: none;
+  }
+}
+
+/* ===== PCB → 3D MORPH (appended; touches no rule above) ===== */
+.pcb-morph { display:block; width:100%; padding:0; border:0; background:none; appearance:none; -webkit-appearance:none; font:inherit; color:inherit; position:relative; overflow:hidden; cursor:pointer; perspective:900px; aspect-ratio:1500/678; }
+.pcb-morph:focus-visible { outline-offset:4px; }
+/* the flat ink board: while the GLB downloads it stays put (just a hair dimmed
+   via .is-loading); then on .is-3d it tilts away as the 3D canvas cross-fades up
+   over the same window — img out / model in, no blank gap, no pop. */
+.pcb-morph .pcb-morph-flat { display:block; width:100%; height:auto; transition: transform .6s var(--ease), opacity .55s var(--ease), filter .3s var(--ease); backface-visibility:hidden; }
+.pcb-morph.is-loading .pcb-morph-flat { filter: brightness(0.93); }
+.pcb-morph-canvas { position:absolute; inset:0; width:100%; height:100%; border:1px solid var(--hairline); mix-blend-mode:normal; opacity:0; transform: scale(1.04); transform-origin:center; transition: opacity .55s var(--ease), transform .6s var(--ease); }
+.pcb-morph.is-3d .pcb-morph-flat { transform: rotateX(-14deg) rotateY(10deg) scale(.94); opacity:0; pointer-events:none; }
+.pcb-morph.is-3d .pcb-morph-canvas { opacity:1; transform:none; cursor:grab; touch-action:none; }
+.pcb-morph.is-3d .pcb-morph-canvas:active { cursor:grabbing; }
+.pcb-morph.is-3d { cursor:default; }
+.pcb-morph-status { position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); margin:0; padding:.35em .8em; background:var(--paper); font-size:var(--fs-sm); letter-spacing:var(--ls-stamp); text-transform:uppercase; color:var(--ink-faint); pointer-events:none; white-space:nowrap; }
+.pcb-morph-status.is-error { color:var(--ink); }
+.pcb-morph-back { position:absolute; left:.5rem; top:.5rem; z-index:2; font:inherit; font-size:var(--fs-sm); letter-spacing:var(--ls-stamp); text-transform:uppercase; color:var(--ink-faint); background:var(--paper); border:1px solid var(--hairline); padding:.25em .6em; cursor:pointer; opacity:0; pointer-events:none; transition: opacity .3s var(--ease) .2s; }
+.pcb-morph.is-3d .pcb-morph-back { opacity:1; pointer-events:auto; }
+.pcb-morph-back:hover, .pcb-morph-back:focus-visible { color:var(--ink); }
+@media (prefers-reduced-motion: reduce) { .pcb-morph.is-3d .pcb-morph-flat { transform:none; } .pcb-morph-canvas, .pcb-morph.is-3d .pcb-morph-canvas { transform:none; } }
+@media print { .pcb-morph-canvas, .pcb-morph-back, .pcb-morph-status { display:none !important; } }
