@@ -339,6 +339,16 @@ main.stack {
 .open .dotline {
   margin-bottom: 0;
 }
+.open-title {
+  font-family: var(--font-mono);
+  font-weight: 500;
+  font-size: clamp(1.05rem, 2.2vw, 1.55rem);
+  letter-spacing: var(--ls-stamp);
+  text-transform: uppercase;
+  color: var(--ink);
+  line-height: 1.2;
+  margin-top: 0.35rem;
+}
 
 /* at most ONE short centered paragraph per section that needs prose */
 .lede {
@@ -700,146 +710,168 @@ a.coffee-val:focus-visible {
   }
 }
 
-/* ----- front ink reveal ----------------------------------------------------
-   The card-front lines "write themselves in" like invisible ink surfacing on
-   parchment: each .ink-line starts blurred + invisible + masked off, and on
-   .is-written (added by inkreveal.ts after the card-stage entrance) a soft
-   left→right mask wipe brings it in, blur settling to crisp, staggered by the
-   --ink-i index set in the markup. The mask is two linear-gradients with the
-   same stop structure so they interpolate (Chromium / WebKit / Firefox).
-   (The card-back coffee lines have their own fade reveal — see the COFFEE CHAT
-   block above.)
+/* ----- front ink reveal: Tom Riddle's diary ---------------------------------
+   inkreveal.ts wraps each glyph in <span class="ink-char"> (inline, so no
+   per-glyph layout box that would re-rasterise sub-pixel at idle). Every
+   char starts colour: white — under the parent's mix-blend-mode: multiply
+   that renders as the paper itself (invisible). On `.is-written` the
+   chars darken in unison up through full ink, while a sub-pixel blur on
+   the line resolves to crisp.
 
-   .ink-line CSS is .js-scoped — no-JS just shows the text in normal flow.
+   No per-char or per-line stagger — the whole inscription surfaces at once.
+
+   .ink-line CSS is .js-scoped — no-JS just shows text in normal flow.
    --------------------------------------------------------------------------- */
+.js .ink-char {
+  /* default inline — no layout box, just a styled inline text run. */
+  color: rgba(255, 255, 255, 1);
+}
 .js .ink-line {
-  -webkit-mask-image: linear-gradient(
-    to right,
-    #000 0%,
-    #000 0%,
-    transparent 0%
-  );
-  mask-image: linear-gradient(to right, #000 0%, #000 0%, transparent 0%);
-  filter: blur(2px);
-  opacity: 0;
+  filter: blur(2.5px);
 }
 .js .ink-line.is-written {
-  -webkit-mask-image: linear-gradient(
-    to right,
-    #000 0%,
-    #000 100%,
-    transparent 100%
-  );
-  mask-image: linear-gradient(to right, #000 0%, #000 100%, transparent 100%);
-  filter: blur(0);
-  opacity: 1;
-  transition:
-    -webkit-mask-image 0.6s var(--ease) calc(var(--ink-i, 0) * 0.12s),
-    mask-image 0.6s var(--ease) calc(var(--ink-i, 0) * 0.12s),
-    filter 0.5s var(--ease) calc(var(--ink-i, 0) * 0.12s + 0.06s),
-    opacity 0.25s var(--ease) calc(var(--ink-i, 0) * 0.12s);
+  animation: ink-emerge-blur 600ms cubic-bezier(0.45, 0, 0.25, 1) forwards;
+}
+.js .ink-line.is-written .ink-char {
+  animation: ink-emerge-color 600ms cubic-bezier(0.45, 0, 0.25, 1) forwards;
+}
+
+@keyframes ink-emerge-blur {
+  from { filter: blur(2.5px); }
+  to   { filter: none; }
+}
+@keyframes ink-emerge-color {
+  from { color: rgba(255, 255, 255, 1); }
+  to   { color: rgba(20, 17, 12, 0.92); }
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .js .ink-char,
   .js .ink-line,
-  .js .ink-line.is-written {
-    -webkit-mask-image: none;
-    mask-image: none;
+  .js .ink-line.is-written,
+  .js .ink-line.is-written .ink-char {
+    color: rgba(20, 17, 12, 0.92);
     filter: none;
-    opacity: 1;
-    transition: none;
+    animation: none !important;
   }
 }
 
 /* ============================================================================
-   MAGIC CARD — the 3D draggable / flippable business card (Agent A)
+   MAGIC CARD — three.js (CSS3DRenderer) driven business card.
 
-   6 nested transform layers so the 3D transforms never clobber each other:
+   DOM:
      #about[position:relative]
-       .card-shadow[aria-hidden]   ← fake floor shadow; NOT in the 3D chain; JS writes --shadow-sx/tx/ty + reads --drag-x/y
-       .card-stage                 ← perspective camera; entrance only (opacity/scale), no live transform
-         .card-drag                ← free-drag translate: translate(var(--drag-x), var(--drag-y)); JS writes those, instant (no lag)
-           .card-tilt              ← parallax tilt: rotateX(var(--tilt-x)) rotateY(var(--tilt-y)); JS writes those
-             .card-float           ← idle bob (pure CSS, off under reduced-motion)
-               .card[data-face]    ← rotateY(var(--flip)); transition .7s ALWAYS on; JS writes --flip, toggles .is-dragging / .is-entering
-                 .card-face.card-front   ← the letterpressed 4 .ink-line <p>s; bone + paper.png fibre (multiply blend)
-                 .card-face.card-back    ← button.coffee-trigger + #coffee-lines (Agent B re-anchors .coffee-lines here)
+       .card-shadow[aria-hidden]   ← cast shadow; NOT in the 3D chain; JS writes --shadow-sx/tx/ty
+       .card3d-host                 ← CSS3DRenderer mounts its wrapper into this. Pointer/keyboard target.
+         (renderer wrapper)         ← three.js owns this transform
+           .card[data-face]         ← surface only; no transform of its own
+             .card-face.card-front  ← letterpressed 4 .ink-line <p>s; bone + paper.png fibre (multiply blend)
+             .card-face.card-back   ← button.coffee-trigger + #coffee-lines
 
-   State classes (see card3d.ts for the contract): .card[data-face="front"|"back"],
-   .card.is-dragging (cursor swap only — the flip transition stays live), .card.is-entering (toggled by inkreveal),
-   .card-back[inert][aria-hidden].
-   CSS custom props JS writes: --flip on .card; --drag-x/--drag-y on .card-drag (also read by .card-shadow);
-   --tilt-x/--tilt-y on .card-tilt; --shadow-sx/--shadow-tx/--shadow-ty on .card-shadow.
-
-   Drag model: pointer-drag only TRANSLATES the card (via .card-drag), clamped so it stays inside #about; it stays put
-   on release (no spring-back, no inertia). A horizontal drag past a threshold triggers one clean animated rotateY 0↔180,
-   then rebases. No pointer-driven rotation (it used to blow up near 90° from getBoundingClientRect foreshortening).
+   State classes: .card[data-face="front"|"back"], .card3d-host.is-dragging, .card-back[inert][aria-hidden].
+   CSS custom props JS writes each frame:
+     --tilt-x / --tilt-y on .card             → feeds the .card-face sun-lighting gradient
+     --shadow-sx / --shadow-tx / --shadow-ty on .card-shadow
    ========================================================================== */
 
-/* the "camera" — gives the rotateY()s their perspective foreshortening */
-.card-stage {
-  perspective: 1100px;
-  perspective-origin: 50% 45%;
-  width: min(28rem, 92vw);
-}
-/* card-stage appears (opacity + a small scale-up); inkreveal removes .is-entering next frame */
-.card-stage.is-entering {
-  opacity: 0;
-  transform: scale(0.96);
-  transition: opacity 0.4s var(--ease), transform 0.4s var(--ease);
-}
-
-/* free-drag layer — JS writes --drag-x / --drag-y; tracks the pointer 1:1, no lag */
-.card-drag {
-  transform: translate(var(--drag-x, 0px), var(--drag-y, 0px));
-  transform-style: preserve-3d;
-  transition: transform 0s;
-}
-
-/* parallax tilt layer — JS writes --tilt-x / --tilt-y on hover */
-.card-tilt {
-  transform: rotateX(var(--tilt-x, 0deg)) rotateY(var(--tilt-y, 0deg));
-  transition: transform 0.3s var(--ease);
-  transform-style: preserve-3d;
-  will-change: transform;
-}
-
-/* faint idle bob — animate transform directly (no @property dependency) */
-.card-float {
-  transform-style: preserve-3d;
-  animation: card-bob 6s var(--ease) infinite;
-}
-@keyframes card-bob {
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-6px);
-  }
-}
-
-/* loading state — WAAPI owns the spin/bounce; silence the slow idle bob so
-   it doesn't fight the WAAPI translateY. Pointer-events stay enabled so a
-   click during the spin lands the card immediately. */
-.card-stage.is-loading .card-float {
-  animation: none;
-}
-
-/* the card itself — rotateY(var(--flip)); the .7s transition ALWAYS animates
-   the flip (drag is translate-only and lives on .card-drag, instant by default) */
-.card {
-  width: 100%;
-  min-height: 17rem; /* tunable — content-driven, not strict credit-card ratio */
+/* the CSS3DRenderer host — also the pointer/keyboard interaction surface.
+   Larger than the card so off-axis rotation isn't clipped by the renderer's
+   overflow:hidden wrapper. */
+.card3d-host {
   position: relative;
-  transform-style: preserve-3d;
-  transform: rotateY(var(--flip, 0deg));
-  transition: transform 0.7s var(--ease);
-  cursor: pointer;
-  touch-action: manipulation;
+  /* generous frame: must accommodate the rotated card's diagonal
+     (~32rem for a 28×17rem card) so no orientation clips the corners. */
+  width: min(40rem, 100vw);
+  min-height: clamp(28rem, 88vw, 36rem);
+  cursor: grab;
+  touch-action: none;
   user-select: none;
   -webkit-user-select: none;
   -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
+  outline-offset: 6px;
+}
+.card3d-host.is-dragging {
+  cursor: grabbing;
+}
+.card3d-host:focus-visible {
+  outline: 1px dotted var(--ink-faint);
+}
+/* CSS3DRenderer injects a wrapper div around the card; preserve-3d keeps the
+   face stack readable through the rotation */
+.card3d-host > div,
+.card3d-host > div > div {
+  transform-style: preserve-3d;
+}
+
+.card {
+  --card-thickness: 6px; /* real cardstock has perceptible heft */
+  width: min(28rem, 92vw);
+  min-height: 17rem;
+  position: relative;
+  transform-style: preserve-3d;
+  /* Keep the card on its own compositor layer at rest, otherwise Chrome
+     re-rasterises the CSS3D matrix into the main paint at idle and the
+     fractional positions blur the type. */
+  will-change: transform;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.card * {
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* The four edge slivers — each a thin paper-fibre strip rotated 90° so it
+   stands perpendicular to the faces, forming the sides of the cardstock. */
+.card-edge {
+  position: absolute;
+  /* match the face exactly so the edges contribute volume only when the card
+     is tilted; head-on they're invisible (no darker rim against the bone). */
+  background-color: var(--paper);
+  background-image: url("./assets/paper.png");
+  background-repeat: repeat;
+  background-size: 300px auto;
+  background-blend-mode: multiply;
+  pointer-events: none;
+}
+/* Each edge sits centred on the corresponding face boundary (shifted out by
+   half its thickness in normal-flow), then rotates 90° around its own centre
+   so it spans the depth between the front and back faces. Each edge is
+   inset from its ends by the face's fillet radius so it stops where the
+   rounded corner begins — otherwise a rectangular sliver pokes past the
+   curve and paints a visible square outline at the corner. */
+.card-edge-top {
+  left: 8px;
+  right: 8px;
+  top: calc(var(--card-thickness) / -2);
+  height: var(--card-thickness);
+  transform-origin: center;
+  transform: rotateX(90deg);
+}
+.card-edge-bottom {
+  left: 8px;
+  right: 8px;
+  bottom: calc(var(--card-thickness) / -2);
+  height: var(--card-thickness);
+  transform-origin: center;
+  transform: rotateX(-90deg);
+}
+.card-edge-left {
+  top: 8px;
+  bottom: 8px;
+  left: calc(var(--card-thickness) / -2);
+  width: var(--card-thickness);
+  transform-origin: center;
+  transform: rotateY(-90deg);
+}
+.card-edge-right {
+  top: 8px;
+  bottom: 8px;
+  right: calc(var(--card-thickness) / -2);
+  width: var(--card-thickness);
+  transform-origin: center;
+  transform: rotateY(90deg);
 }
 
 /* the two faces — absolutely stacked, back-face culled so only one shows.
@@ -861,12 +893,67 @@ a.coffee-val:focus-visible {
   background-repeat: repeat;
   background-size: 300px auto;
   background-blend-mode: multiply;
-  border-radius: 12px;
-  /* the *stock edge* — a hairline + a lit upper lip; NOT the cast shadow */
-  box-shadow:
-    0 0 0 1px rgba(26, 25, 22, 0.08) inset,
-    0 1px 0 rgba(255, 255, 255, 0.5) inset;
-  transform: translateZ(0);
+  overflow: hidden;
+  /* filleted corners — softer than printers' typical 3 mm radius but
+     enough to read as a deliberate die-cut. */
+  border-radius: 8px;
+}
+.card-front {
+  transform: translateZ(calc(var(--card-thickness) / 2));
+  /* keep crisp at rest (Chrome decomposes idle CSS3D layers back to main
+     paint and re-rasterises text onto fractional pixels otherwise). */
+  will-change: transform;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+/* sun lighting — warm directional wash from top-left, soft shade in the
+   opposite corner. Layered as overlays so the paper hue stays itself. */
+.card-face::before,
+.card-face::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+}
+/* Realistic paper shading: Lambertian wash across the WHOLE face — one side
+   lit, the other shaded — driven by the surface normal as the card tilts.
+   Vars cascade down from .card-tilt (--tilt-x/-y in deg, ±7deg range).
+   tilt-y > 0 → right edge tilts away → left side faces the sun → brightens.
+   tilt-x > 0 → top tilts away    → bottom faces the sun → brightens.
+   We translate that to a linear-gradient angle + a midpoint shift, then add a
+   small grazing specular near the leading edge. */
+.card-face {
+  /* normalized tilt in [-1,1] (TILT_MAX = 7deg in card3d.ts) */
+  --nx: calc(var(--tilt-y, 0deg) / 7deg);
+  --ny: calc(var(--tilt-x, 0deg) / 7deg);
+  /* gradient angle: baseline 135deg (upper-left → lower-right), rotated by tilt
+     so the light/shade axis tracks the world-fixed sun */
+  --light-angle: calc(135deg + var(--nx) * 25deg + var(--ny) * 25deg);
+  /* center bias of the diffuse wash — pushes the bright half across the face */
+  --light-bias: calc(50% + (var(--nx) + var(--ny)) * 12%);
+}
+/* one smooth diffuse wash, edge to edge — no hotspot, no blob. The whole face
+   gradates from a touch warmer on the lit side to a touch cooler/darker on the
+   shaded side. Subtle enough to read as ambient sunlight on matte paper. */
+.card-face::before {
+  background: linear-gradient(
+    var(--light-angle),
+    rgba(255, 238, 208, 0.22) 0%,
+    rgba(255, 238, 208, 0) 50%,
+    rgba(26, 25, 22, 0.14) 100%
+  );
+  mix-blend-mode: soft-light;
+  transition: background 0.22s var(--ease);
+}
+.card-face::after {
+  display: none;
+}
+.card-front > *,
+.card-back > * {
+  position: relative;
+  z-index: 1;
 }
 
 /* front face = the letterpressed landing card (migrated from #about .block) */
@@ -879,6 +966,14 @@ a.coffee-val:focus-visible {
     0 1px 0.5px rgba(255, 255, 255, 0.6), /* light on the lower lip of the press */
     0 -1px 1px rgba(26, 25, 22, 0.22); /* shade along the upper wall of the press */
 }
+/* "ink soaked into paper" — the glyphs blend with the bone+fibre texture
+   behind them via multiply, so the paper grain shows through the ink the way
+   it does on real cardstock. Crisp now that the card sits inside a CSS3D
+   matrix; the prior sub-pixel blur compounded with the 3D rasterisation. */
+.card-front .ink-line {
+  color: rgba(20, 17, 12, 0.92);
+  mix-blend-mode: multiply;
+}
 .card-front .name {
   font-weight: 700;
   letter-spacing: 0.12em;
@@ -888,18 +983,23 @@ a.coffee-val:focus-visible {
   color: var(--ink);
 }
 
-/* back face = pre-rotated 180°; the COFFEE CHAT button sits ~14% down so the
-   contact lines fill below it without nudging the button when they reveal */
+/* back face = pre-rotated 180° + pushed back by half the cardstock depth so
+   the front and back faces sandwich the edge slivers symmetrically. The
+   COFFEE CHAT button sits ~14% down so the contact lines fill below it
+   without nudging the button when they reveal. */
 .card-back {
-  transform: rotateY(180deg);
+  transform: rotateY(180deg) translateZ(calc(var(--card-thickness) / 2));
   justify-content: flex-start;
   padding-top: clamp(2rem, 14%, 3.5rem);
+  will-change: transform;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
 }
 
 /* fake floor shadow — a blurred dark ellipse sized to the card (not the hero),
-   sitting a touch below the card's centre; follows the card's free-drag offset
-   (--drag-x/y), JS squashes it horizontally as the card turns edge-on
-   (--shadow-sx) and nudges it opposite the parallax tilt (--shadow-tx/ty) */
+   sitting a touch below the card's centre; JS squashes it horizontally as the
+   card turns edge-on (--shadow-sx) and nudges it opposite the parallax tilt
+   (--shadow-tx/ty). */
 .card-shadow {
   position: absolute;
   left: 50%;
@@ -907,7 +1007,6 @@ a.coffee-val:focus-visible {
   width: min(22rem, 80vw); /* ~78% of the card's min(28rem,92vw) — tracks the card, not #about */
   height: 3.75rem;
   transform: translate(-50%, calc(-50% + 7.5rem)) /* drop to just under the ~17rem card */
-    translate(var(--drag-x, 0px), var(--drag-y, 0px)) /* follow the dragged card */
     translate(var(--shadow-tx, 0px), var(--shadow-ty, 0px))
     scaleX(var(--shadow-sx, 1));
   background: radial-gradient(
@@ -923,37 +1022,19 @@ a.coffee-val:focus-visible {
   transition: transform 0.12s var(--ease), opacity 0.7s var(--ease);
 }
 
-/* reduced motion: no float / tilt / entrance; instant flip; static shadow that
-   still follows the dragged card (--drag-x/y), just no parallax squash/nudge.
-   The drag-translate (.card-drag) keeps working — it's direct manipulation. */
+/* reduced motion: card3d snaps the flip and skips the entrance tween; the
+   shadow stops tracking parallax. */
 @media (prefers-reduced-motion: reduce) {
-  .card {
-    transition: none;
-  }
-  .card-stage,
-  .card-tilt,
-  .card-float {
-    transition: none;
-    transform: none !important;
-    animation: none !important;
-  }
   .card-shadow {
     transition: none;
     animation: none;
-    transform: translate(-50%, calc(-50% + 7.5rem))
-      translate(var(--drag-x, 0px), var(--drag-y, 0px));
-  }
-  .card-stage.is-entering {
-    opacity: 1;
-    transform: none;
   }
 }
 
 /* print: just the readable front, flat */
 @media print {
-  .card {
-    transform: none;
-    box-shadow: none;
+  .card3d-host {
+    aspect-ratio: auto;
   }
   .card-shadow {
     display: none;

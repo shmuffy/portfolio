@@ -35,7 +35,7 @@ export function gutterRow(left: string, text: string, right: string): string {
 
 /** the .open section opener: "ID — TITLE" stamp + dotline */
 export function sectionOpen(id: string, title: string): string {
-  return `<div class="open reveal"><p class="stamp stamp--ink">${esc(id)} — ${esc(title.toUpperCase())}</p><i class="dotline" aria-hidden="true"></i></div>`;
+  return `<div class="open reveal"><p class="stamp">${esc(id)}</p><h2 class="open-title">${esc(title.toUpperCase())}</h2><i class="dotline" aria-hidden="true"></i></div>`;
 }
 
 /** a single mono "A → B → C" line; arrows in a faint span */
