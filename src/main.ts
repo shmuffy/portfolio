@@ -7,7 +7,9 @@ import { contactSection } from "./components/contact";
 import { initReveal } from "./lib/reveal";
 import { initScrollSpy } from "./lib/scrollspy";
 import { initCard3d } from "./lib/card3d";
+import { initLoadingCard } from "./lib/loadingcard";
 import { initInkReveal } from "./lib/inkreveal";
+import { initFlipHint } from "./lib/fliphint";
 import { initCoffeeChat } from "./lib/coffeechat";
 import { initPcbMorph } from "./lib/pcbmorph";
 
@@ -27,6 +29,8 @@ if (app) {
   initScrollSpy();
   initCard3d();
   initInkReveal();
+  initLoadingCard();
+  initFlipHint();
   initCoffeeChat();
   initPcbMorph();
 

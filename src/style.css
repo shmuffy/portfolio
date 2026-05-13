@@ -819,6 +819,13 @@ a.coffee-val:focus-visible {
   }
 }
 
+/* loading state — WAAPI owns the spin/bounce; silence the slow idle bob so
+   it doesn't fight the WAAPI translateY. Pointer-events stay enabled so a
+   click during the spin lands the card immediately. */
+.card-stage.is-loading .card-float {
+  animation: none;
+}
+
 /* the card itself — rotateY(var(--flip)); the .7s transition ALWAYS animates
    the flip (drag is translate-only and lives on .card-drag, instant by default) */
 .card {
@@ -828,14 +835,11 @@ a.coffee-val:focus-visible {
   transform-style: preserve-3d;
   transform: rotateY(var(--flip, 0deg));
   transition: transform 0.7s var(--ease);
-  cursor: grab;
-  touch-action: none; /* we own both axes for free dragging */
+  cursor: pointer;
+  touch-action: manipulation;
   user-select: none;
   -webkit-user-select: none;
   -webkit-touch-callout: none;
-}
-.card.is-dragging {
-  cursor: grabbing; /* the .7s flip transition stays live; drag-translate is on .card-drag */
 }
 
 /* the two faces — absolutely stacked, back-face culled so only one shows.

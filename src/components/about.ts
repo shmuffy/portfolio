@@ -47,7 +47,7 @@ export function about(): string {
 
   return `<section class="block-section" id="about" aria-labelledby="about-name">
     <div class="card-shadow" aria-hidden="true"></div>
-    <div class="card-stage">
+    <div class="card-stage is-loading">
       <div class="card-drag">
         <div class="card-tilt">
           <div class="card-float">
