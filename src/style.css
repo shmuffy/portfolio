@@ -1064,3 +1064,4 @@ a.coffee-val:focus-visible {
 .pcb-morph-back:hover, .pcb-morph-back:focus-visible { color:var(--ink); }
 @media (prefers-reduced-motion: reduce) { .pcb-morph.is-3d .pcb-morph-flat { transform:none; } .pcb-morph-canvas, .pcb-morph.is-3d .pcb-morph-canvas { transform:none; } }
 @media print { .pcb-morph-canvas, .pcb-morph-back, .pcb-morph-status { display:none !important; } }
+

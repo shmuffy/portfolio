@@ -2,7 +2,7 @@ import "./style.css";
 
 import { nav } from "./components/nav";
 import { about } from "./components/about";
-import { workSection } from "./components/work";
+import { workSection, projectsSection } from "./components/work";
 import { contactSection } from "./components/contact";
 import { initReveal } from "./lib/reveal";
 import { initScrollSpy } from "./lib/scrollspy";
@@ -21,6 +21,7 @@ if (app) {
     <main class="stack" id="main">
       ${about()}
       ${workSection()}
+      ${projectsSection()}
       ${contactSection()}
     </main>
   `;

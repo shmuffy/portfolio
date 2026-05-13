@@ -400,6 +400,14 @@ export function initCard3d(): void {
   const tick = (): void => {
     renderer.render(scene, camera);
 
+    // Explicit face culling. backface-visibility:hidden is unreliable in this
+    // CSS3D layer setup — Chrome's compositor occasionally rasterises the
+    // reverse of the active face on top of the inactive face, so we hide the
+    // away-facing face directly via inline visibility.
+    normalScratch.set(0, 0, 1).applyQuaternion(obj.quaternion);
+    front.style.visibility = normalScratch.z >= 0 ? "visible" : "hidden";
+    back.style.visibility = normalScratch.z < 0 ? "visible" : "hidden";
+
     eulerScratch.setFromQuaternion(obj.quaternion, "YXZ");
     const tiltYdeg = clamp(
       (wrapHalfTurn(eulerScratch.y) * 180) / Math.PI,

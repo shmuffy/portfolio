@@ -198,18 +198,23 @@ function projectEntry(p: Project): string {
   </div>`;
 }
 
-/* ---- section -------------------------------------------------------------- */
+/* ---- sections ------------------------------------------------------------- */
 
 export function workSection(): string {
+  return `<section class="block-section" id="work" aria-label="Work">
+    ${sectionOpen("02", "Work")}
+    ${experience.map(roleEntry).join("")}
+  </section>`;
+}
+
+export function projectsSection(): string {
   const gh = links.find((l) => l.key === "github");
   const ghLine = gh
     ? `<p class="linkline"><a href="${esc(gh.href)}" target="_blank" rel="noopener">MORE — ${esc(gh.display)} →</a></p>`
     : "";
 
-  return `<section class="block-section" id="work" aria-label="Work">
-    ${sectionOpen("02", "Work")}
-    ${experience.map(roleEntry).join("")}
-    ${dotline()}
+  return `<section class="block-section" id="projects" aria-label="Projects">
+    ${sectionOpen("03", "Projects")}
     ${projects
       .map((p) => projectEntry(p) + (p.schematic === "bms-load" ? projectBoards() : ""))
       .join(dotline())}
