@@ -123,7 +123,9 @@ export function initCard3d(): void {
     camera.aspect = w / h;
     // Pick distance so 1 CSS px maps to 1 world unit (matches CSS3DRenderer).
     const fovRad = (camera.fov * Math.PI) / 180;
-    camera.position.z = h / 2 / Math.tan(fovRad / 2);
+    // Round to integer so the CSS3D matrix uses whole-pixel translations —
+    // fractional values cause sub-pixel rasterization of the card text.
+    camera.position.z = Math.round(h / 2 / Math.tan(fovRad / 2));
     camera.updateProjectionMatrix();
   };
   fitCamera();

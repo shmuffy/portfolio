@@ -6,12 +6,12 @@
 
 /* ---- tokens ---------------------------------------------------------------- */
 :root {
-  --paper: #ddd8ca; /* warm bone cardstock — the Paul Allen card */
-  --paper-2: #d3cebf; /* rare inset / hairline-framed box fill */
+  --paper: #eae8e1; /* light off-white paper — barely warm */
+  --paper-2: #e0ddd6; /* rare inset / hairline-framed box fill */
   --ink: #1a1916; /* near-black, warm — never pure #000 */
   --ink-2: #4c4a44; /* secondary text (sparingly) */
   --ink-faint: #918e86; /* gutter chars, fine print, leaders, inactive */
-  --hairline: #c6c2b6; /* the occasional 1px rule */
+  --hairline: #cbc8c0; /* the occasional 1px rule */
 
   --maxw: 1080px;
   --measure: 30rem; /* THE narrow content column ≈ 480px */
@@ -215,11 +215,9 @@ main.stack {
     min-height: calc(100vh - var(--nav-h));
   }
 }
-/* the title page already fills a screen — don't make the reader scroll a whole
-   extra void to reach Work; pull it up to a smaller gap (negative margin cancels
-   most of main.stack's --gap-xl) */
+/* the title page already fills a screen — pull Work up to a tighter gap */
 #about + #work {
-  margin-top: calc(var(--gap-l) - var(--gap-xl));
+  margin-top: calc(var(--gap-m) - var(--gap-xl));
 }
 
 /* The landing card is letterpressed (the Paul Allen card): every line is struck
@@ -454,19 +452,125 @@ main.stack {
   color: var(--ink);
 }
 
-/* hero scroll cue — sits in the emptiness below the card */
+/* ---- scroll hint: cartoon rocket ------------------------------------------ */
 .scroll-hint {
-  display: block;
-  /* sit low and quiet in the void — don't crowd the card */
-  margin-top: var(--gap-l);
-  text-align: center;
-  font-size: var(--fs);
+  position: absolute;
+  bottom: 1.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
   color: var(--ink-faint);
   transition: color 0.15s var(--ease);
+  overflow: visible;
 }
 .scroll-hint:hover,
-.scroll-hint:focus-visible {
-  color: var(--ink);
+.scroll-hint:focus-visible { color: var(--ink); }
+
+.srocket-stage {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2.5rem;
+  overflow: visible;
+}
+
+/* dotted trail: zero-size SVG at rocket rest position, renders into overflow */
+.srocket-trail-svg {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 0;
+  height: 0;
+  overflow: visible;
+  pointer-events: none;
+}
+.srocket-trail-path {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1;
+  stroke-dasharray: 2 3;
+  stroke-linecap: round;
+  opacity: 0;
+  animation: srocket-trail 5s linear infinite;
+}
+
+/* rocket — flex-centered; animation moves it relative to that center */
+.srocket {
+  width: clamp(0.85rem, 2vw, 1.1rem);
+  height: auto;
+  display: block;
+  flex-shrink: 0;
+  animation: srocket-fly 5s linear infinite;
+}
+
+/* arrow — centred over stage via margin:auto, invisible until morph */
+.srocket-arr {
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  width: fit-content;
+  height: fit-content;
+  font-family: var(--font-mono);
+  font-size: clamp(0.9rem, 2.2vw, 1.15rem);
+  line-height: 1;
+  opacity: 0;
+  animation: srocket-arr 5s linear infinite;
+}
+
+/* ---- LOOP-DE-LOOP keyframes -----------------------------------------------
+   CCW circle r=12px, centre at (−12, 0) from rocket rest-pos.
+   x(θ)=−12(1−cosθ),  y(θ)=−12·sinθ   (θ: 0→360° CCW in screen space)
+   Rocket nose follows the tangent → full −360° spin over the loop.
+   0–55%: one full loop  |  55–100%: nudge-down → morph → arrow → reset
+   ---------------------------------------------------------------------- */
+@keyframes srocket-fly {
+  /* loop */
+  0%     { transform: translate(   0px,    0px) rotate(   0deg); opacity:1; }
+  13.75% { transform: translate( -12px,  -12px) rotate( -90deg); opacity:1; }
+  27.5%  { transform: translate( -24px,    0px) rotate(-180deg); opacity:1; }
+  41.25% { transform: translate( -12px,   12px) rotate(-270deg); opacity:1; }
+  55%    { transform: translate(   0px,    0px) rotate(-360deg); opacity:1; }
+  /* thrust charge */
+  58%    { transform: translate(   0px,   -3px) rotate(-360deg) scaleY(0.91); opacity:1; }
+  /* thrust burst */
+  65%    { transform: translate(   0px,   11px) rotate(-360deg) scaleY(0.87); opacity:1; }
+  /* spring bounce */
+  70%    { transform: translate(   0px,    4px) rotate(-360deg) scaleY(1.06); opacity:1; }
+  /* morph out */
+  74%    { transform: translate(   0px,    4px) scale(0.3); opacity:0; }
+  88%    { transform: translate(   0px,    0px) scale(0.3); opacity:0; }
+  /* reappear */
+  95%    { transform: translate(   0px,    0px) scale(1);   opacity:1; }
+  100%   { transform: translate(   0px,    0px) rotate(-360deg) scale(1); opacity:1; }
+}
+
+/* dotted trail fades in as loop progresses, fades out on nudge */
+@keyframes srocket-trail {
+  0%,  3%  { opacity:0;    }
+  12%      { opacity:0.45; }
+  55%      { opacity:0.45; }
+  66%      { opacity:0;    }
+  100%     { opacity:0;    }
+}
+
+/* arrow pops in, nods down once, dissolves */
+@keyframes srocket-arr {
+  0%,  72% { opacity:0; transform: scale(0.4) translateY(-5px); }
+  80%      { opacity:1; transform: scale(1)   translateY( 0px); }
+  83%      { opacity:1; transform: scale(1)   translateY( 3px); }
+  85%      { opacity:1; transform: scale(1)   translateY( 0px); }
+  89%      { opacity:0; transform: scale(0.8) translateY( 5px); }
+  100%     { opacity:0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .srocket            { animation: none; opacity: 1; }
+  .srocket-trail-path { animation: none; opacity: 0; }
+  .srocket-arr        { animation: none; opacity: 0.65; transform: none; }
 }
 
 /* footer is a sibling of <main>, not inside the .stack flex flow */
@@ -726,20 +830,10 @@ a.coffee-val:focus-visible {
   /* default inline — no layout box, just a styled inline text run. */
   color: rgba(255, 255, 255, 1);
 }
-.js .ink-line {
-  filter: blur(2.5px);
-}
-.js .ink-line.is-written {
-  animation: ink-emerge-blur 600ms cubic-bezier(0.45, 0, 0.25, 1) forwards;
-}
 .js .ink-line.is-written .ink-char {
   animation: ink-emerge-color 600ms cubic-bezier(0.45, 0, 0.25, 1) forwards;
 }
 
-@keyframes ink-emerge-blur {
-  from { filter: blur(2.5px); }
-  to   { filter: none; }
-}
 @keyframes ink-emerge-color {
   from { color: rgba(255, 255, 255, 1); }
   to   { color: rgba(20, 17, 12, 0.92); }
@@ -747,11 +841,8 @@ a.coffee-val:focus-visible {
 
 @media (prefers-reduced-motion: reduce) {
   .js .ink-char,
-  .js .ink-line,
-  .js .ink-line.is-written,
   .js .ink-line.is-written .ink-char {
     color: rgba(20, 17, 12, 0.92);
-    filter: none;
     animation: none !important;
   }
 }

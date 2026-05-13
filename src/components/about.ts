@@ -64,6 +64,25 @@ export function about(): string {
         <div class="card-edge card-edge-right" aria-hidden="true"></div>
       </div>
     </div>
-  </section>
-  <a class="scroll-hint" href="#work" aria-label="Scroll to Work">↓</a>`;
+    <a class="scroll-hint" href="#work" aria-label="Scroll to Work">
+      <span class="srocket-stage" aria-hidden="true">
+        <!-- dotted loop trail: zero-size SVG anchored at rocket rest-pos -->
+        <svg class="srocket-trail-svg" aria-hidden="true" focusable="false">
+          <path class="srocket-trail-path"
+                d="M 0 0 A 12 12 0 0 0 -24 0 A 12 12 0 0 0 0 0"/>
+        </svg>
+        <!-- rocket facing UP -->
+        <svg class="srocket" viewBox="0 0 20 34"
+             fill="none" stroke="currentColor"
+             stroke-width="1.35" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M10 2 L5 14 L5 26 L8.5 29.5 L11.5 29.5 L15 26 L15 14 Z"/>
+          <path d="M8.5 29.5 L7.5 32 L12.5 32 L11.5 29.5"/>
+          <path d="M5 20 L1 26 L5 27.5"/>
+          <path d="M15 20 L19 26 L15 27.5"/>
+          <circle cx="10" cy="15" r="2.5"/>
+        </svg>
+        <span class="srocket-arr">↓</span>
+      </span>
+    </a>
+  </section>`;
 }
