@@ -66,11 +66,6 @@ export function about(): string {
     </div>
     <a class="scroll-hint" href="#desktop" aria-label="Scroll to Desktop">
       <span class="srocket-stage" aria-hidden="true">
-        <!-- dotted loop trail: zero-size SVG anchored at rocket rest-pos -->
-        <svg class="srocket-trail-svg" aria-hidden="true" focusable="false">
-          <path class="srocket-trail-path"
-                d="M 0 0 A 12 12 0 0 0 -24 0 A 12 12 0 0 0 0 0"/>
-        </svg>
         <!-- rocket facing UP with exhaust flame -->
         <svg class="srocket" viewBox="0 0 20 34" overflow="visible"
              fill="none" stroke="currentColor"
