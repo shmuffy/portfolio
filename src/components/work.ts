@@ -5,6 +5,7 @@ import pcbBmsUrl from "../assets/pcb-bms.png";
 import pcbEloadUrl from "../assets/pcb-eload.png";
 import pcbSensorHubUrl from "../assets/pcb-sensorhub.png";
 import pcbCutieUrl from "../assets/pcb-cutie.png";
+import seniorDesignPhotoUrl from "../assets/senior-design-group-photo.jpg";
 import bmsGlb from "../assets/BMS.glb?url";
 import eloadGlb from "../assets/E-Load.glb?url";
 import cutieGlb from "../assets/cutie.glb?url";
@@ -106,6 +107,16 @@ function figure(schematic: Project["schematic"]): string {
   return `<div class="figure">${figs}${out}</div>`;
 }
 
+function photoFigure(
+  src: string,
+  w: number,
+  h: number,
+  alt: string,
+  cap: string,
+): string {
+  return `<div class="figure figure--photo"><img src="${src}" width="${w}" height="${h}" loading="lazy" decoding="async" alt="${esc(alt)}">${stampLine(cap)}</div>`;
+}
+
 function boardFigure(
   src: string,
   w: number,
@@ -171,11 +182,22 @@ function projectHtml(p: Project): string {
   const progressBlock = p.progress
     ? `${stampLine(p.progress.stamp)}<p>${esc(p.progress.body)}</p>`
     : "";
+  const heroPhoto =
+    p.schematic === "bms-load"
+      ? photoFigure(
+          seniorDesignPhotoUrl,
+          1215,
+          911,
+          "Senior design group of four standing in front of the BMS / 300 W electronic-load poster, with the laptop dashboard, BMS board, electronic-load enclosure, and bench supply on the table in front.",
+          "PHOTO — SENIOR DESIGN GROUP · UCR EE 175 · MAR 2026",
+        )
+      : "";
   return `<div class="block">
     ${stampLine(`[${p.badge}] · ${p.span}`)}
     ${stampLine(p.title, true)}
     <p class="lede">${esc(blurbs[p.schematic])}</p>
     ${progressBlock}
+    ${heroPhoto}
     ${figure(p.schematic)}
     ${specRows}
     ${stampLine(p.tags.join(" · "))}

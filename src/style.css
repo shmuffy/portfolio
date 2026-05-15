@@ -427,6 +427,18 @@ main.stack {
   mix-blend-mode: multiply;
 }
 
+/* a real color photo — same wider measure as board renders, hairline frame,
+   but no blend mode so the photo's own tones survive on the bone paper. */
+.figure--photo {
+  max-width: min(100%, 46rem);
+  margin: var(--gap-m) auto;
+}
+.figure--photo img {
+  width: 100%;
+  height: auto;
+  border: 1px solid var(--hairline);
+}
+
 /* a single mono flow line: A → B → C */
 .flowline {
   font-size: var(--fs-sm);
@@ -1366,7 +1378,8 @@ a.coffee-val:focus-visible {
 }
 
 .folder-modal-body > .figure,
-.folder-modal-body > .figure--board {
+.folder-modal-body > .figure--board,
+.folder-modal-body > .figure--photo {
   max-width: var(--maxw);
   margin-inline: auto;
   margin-top: clamp(1.5rem, 4vh, 2.5rem);
