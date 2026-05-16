@@ -439,6 +439,28 @@ main.stack {
   border: 1px solid var(--hairline);
 }
 
+/* two photo figures side-by-side — used for portrait PCB renders so a single
+   tall image doesn't dominate the column at full width. */
+.figure-pair {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--gap-m);
+  justify-content: center;
+  align-items: flex-start;
+  max-width: min(100%, 46rem);
+  margin: var(--gap-m) auto;
+}
+.figure-pair > .figure--photo {
+  flex: 0 1 auto;
+  margin: 0;
+  max-width: 14rem;
+}
+.figure-pair > .figure--photo img {
+  width: auto;
+  max-width: 100%;
+  max-height: 32rem;
+}
+
 /* a single mono flow line: A → B → C */
 .flowline {
   font-size: var(--fs-sm);

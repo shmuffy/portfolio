@@ -41,11 +41,12 @@ export const experience: Role[] = [
     span: "Mar 2024 — Oct 2025",
     stamp: "2024 — 2025",
     points: [
-      "Co-founded the club and built its **avionics power architecture** — a 12S, 120 A distribution board feeding flight, payload, and comms rails.",
+      "Co-founded **Aviat'R** to succeed UCR's dissolved **Unmanned Aerial Systems (UAS)** club — scrapped the legacy airframe and architecture after most members left, secured outside sponsorship to backfill internal funding, and rebuilt the avionics stack from scratch to qualify for the **AUVSI SUAS** competition.",
+      "Architected the drone's **avionics power system** — a **Holybro PM07** distribution board feeding a 12S, 120 A bus into flight, payload, and comms rails, driving **T-Motor MN5212 KV340** brushless propulsion through 40 A ESCs.",
       "Configured and validated **RFD900x-US radios** for >40 km command and telemetry under FCC-compliant operation.",
       "Owned bring-up: harnessing, ground-station integration, and pre-flight electrical checkout.",
     ],
-    tags: ["Power Distribution", "RF Telemetry", "FCC Part 15", "Avionics"],
+    tags: ["Power Distribution", "RF Telemetry", "FCC Part 15", "Avionics", "SUAS"],
   },
   {
     mod: "MOD-03",

@@ -6,6 +6,12 @@ import pcbEloadUrl from "../assets/pcb-eload.png";
 import pcbSensorHubUrl from "../assets/pcb-sensorhub.png";
 import pcbCutieUrl from "../assets/pcb-cutie.png";
 import seniorDesignPhotoUrl from "../assets/senior-design-group-photo.jpg";
+import taslGroupPhotoUrl from "../assets/tasl-group-photo.jpg";
+import fsaeTeamPhotoUrl from "../assets/fsae-team-photo.jpg";
+import pcbHrBms3dUrl from "../assets/pcb-hr-bms-3d.png";
+import pcbHrBmsLayoutUrl from "../assets/pcb-hr-bms-layout.png";
+import cutieLemonCardUrl from "../assets/cutie-lemon-card.jpg";
+import cutieStackUrl from "../assets/cutie-stack.jpg";
 import bmsGlb from "../assets/BMS.glb?url";
 import eloadGlb from "../assets/E-Load.glb?url";
 import cutieGlb from "../assets/cutie.glb?url";
@@ -18,7 +24,7 @@ const lead: Record<string, string> = {
   "MOD-01":
     "Direct the **C.U.T.I.E. CubeSat** payload — designed its 4S Li-ion battery card and the team's Altium component library.",
   "MOD-02":
-    "Co-founded the club and built its **avionics power architecture** — a 12S, 120 A distribution board feeding flight, payload, and comms.",
+    "Co-founded **Aviat'R** to revive UCR's drone program for the **SUAS** competition — built the **avionics power architecture** on a Holybro PM07, 12S / 120 A to flight, payload, and comms.",
   "MOD-03":
     "Optimized **Gaussian-Splatting datasets** for GPU pipelines — 28 fps on an RTX 4090 — and integrated a ROSmaster R2 platform.",
   "MOD-04":
@@ -41,22 +47,64 @@ function roleHtml(r: Role): string {
 }
 
 const roleBoards: Record<string, string> = {
-  "MOD-01": boardFigure(
-    pcbCutieUrl,
-    1104,
-    700,
-    "Monochrome line render of the CUTIE CubeSat ejection-module PCB layout — routing, silkscreen, components, pads and board outline as ink linework.",
-    "BOARD LAYOUT · CUTIE CUBESAT · EJECTION MODULE · ALTIUM",
-    cutieGlb,
+  "MOD-01":
+    `<div class="figure-pair">${photoFigure(
+      cutieLemonCardUrl,
+      4284,
+      5712,
+      "Bench photo of the LEMON battery card — STM32F303, BQ76 cell-monitor, gate drivers and tap connectors populated on the green CubeSat-format PCB, resting on a sticker-covered toolbox.",
+      "PHOTO — LEMON BATTERY CARD · CUTIE CUBESAT",
+    )}${photoFigure(
+      cutieStackUrl,
+      2252,
+      4000,
+      "Hand-held stack of CUTIE CubeSat boards — LEMON and CITRUS daughter cards plugged into the GNSS / LoRa main board.",
+      "PHOTO — CUTIE BOARD STACK · LEMON · CITRUS · GNSS · LoRa",
+    )}</div>` +
+    boardFigure(
+      pcbCutieUrl,
+      1104,
+      700,
+      "Monochrome line render of the CUTIE CubeSat ejection-module PCB layout — routing, silkscreen, components, pads and board outline as ink linework.",
+      "BOARD LAYOUT · CUTIE CUBESAT · EJECTION MODULE · ALTIUM",
+      cutieGlb,
+    ),
+  "MOD-03": photoFigure(
+    taslGroupPhotoUrl,
+    7616,
+    4284,
+    "Group photo of the Trustworthy Autonomous Systems Lab outside on UCR campus — roughly two dozen researchers with a PAL Robotics TIAGo mobile manipulator at the right edge of the group.",
+    "PHOTO — TRUSTWORTHY AUTONOMOUS SYSTEMS LAB · UCR · FALL 2024",
   ),
-  "MOD-04": boardFigure(
-    pcbSensorHubUrl,
-    1332,
-    716,
-    "Monochrome line render of the STM32F405 vehicle sensor-hub PCB layout — routing, silkscreen, components, pads and board outline as ink linework.",
-    "BOARD LAYOUT · STM32F405 SENSOR HUB · ALTIUM",
-    sensorhubGlb,
-  ),
+  "MOD-04":
+    photoFigure(
+      fsaeTeamPhotoUrl,
+      4032,
+      3024,
+      "Highlander Racing Formula SAE team gathered outside a UCR engineering building — large group photo of roughly seventy members.",
+      "PHOTO — HIGHLANDER RACING · FORMULA SAE · UCR",
+    ) +
+    `<div class="figure-pair">${photoFigure(
+      pcbHrBms3dUrl,
+      396,
+      1140,
+      "Altium 3D render of the Highlander Racing 400 V pack BMS PCB — long narrow board with the BQ76PLQ1 stacked cell monitor, STM32, isolated DC-DC, and thermistor / tap connector banks visible.",
+      "RENDER — 400 V FSAE BMS · ALTIUM 3D",
+    )}${photoFigure(
+      pcbHrBmsLayoutUrl,
+      440,
+      1154,
+      "Altium top-view layout of the Highlander Racing 400 V pack BMS PCB — routing, polygons, and silkscreen across both halves of the daughter-card and main board.",
+      "LAYOUT — 400 V FSAE BMS · ALTIUM",
+    )}</div>` +
+    boardFigure(
+      pcbSensorHubUrl,
+      1332,
+      716,
+      "Monochrome line render of the STM32F405 vehicle sensor-hub PCB layout — routing, silkscreen, components, pads and board outline as ink linework.",
+      "BOARD LAYOUT · STM32F405 SENSOR HUB · ALTIUM",
+      sensorhubGlb,
+    ),
 };
 
 /* ---- mono-text schematics for the project figures ------------------------- */
