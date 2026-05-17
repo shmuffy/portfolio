@@ -12,6 +12,10 @@ import pcbHrBms3dUrl from "../assets/pcb-hr-bms-3d.png";
 import pcbHrBmsLayoutUrl from "../assets/pcb-hr-bms-layout.png";
 import cutieLemonCardUrl from "../assets/cutie-lemon-card.jpg";
 import cutieStackUrl from "../assets/cutie-stack.jpg";
+import cubesatTeamPhotoUrl from "../assets/cubesat-team-photo.jpg";
+import rocketLaunchUrl from "../assets/rocket-launch.jpg";
+import bmsAssembledUrl from "../assets/bms-assembled.jpg";
+import eloadReworkedUrl from "../assets/eload-reworked.jpg";
 import bmsGlb from "../assets/BMS.glb?url";
 import eloadGlb from "../assets/E-Load.glb?url";
 import cutieGlb from "../assets/cutie.glb?url";
@@ -48,6 +52,19 @@ function roleHtml(r: Role): string {
 
 const roleBoards: Record<string, string> = {
   "MOD-01":
+    `<div class="figure-pair figure-pair--mixed">${photoFigure(
+      cubesatTeamPhotoUrl,
+      6000,
+      4000,
+      "Highlander Space Program CubeSat team group photo — members gathered together on UCR campus.",
+      "PHOTO — HIGHLANDER SPACE PROGRAM · CUTIE CUBESAT TEAM",
+    )}${photoFigure(
+      rocketLaunchUrl,
+      4000,
+      6000,
+      "Highlander Space Program liquid-propulsion rocket lifting off the test stand — flame and exhaust plume against open sky.",
+      "PHOTO — HIGHLANDER SPACE PROGRAM · LIQUID PROPULSION ROCKET LAUNCH",
+    )}</div>` +
     `<div class="figure-pair">${photoFigure(
       cutieLemonCardUrl,
       4284,
@@ -238,7 +255,20 @@ function projectHtml(p: Project): string {
           911,
           "Senior design group of four standing in front of the BMS / 300 W electronic-load poster, with the laptop dashboard, BMS board, electronic-load enclosure, and bench supply on the table in front.",
           "PHOTO — SENIOR DESIGN GROUP · UCR EE 175 · MAR 2026",
-        )
+        ) +
+        `<div class="figure-pair figure-pair--wide">${photoFigure(
+          bmsAssembledUrl,
+          4000,
+          2252,
+          "Assembled 10-cell Li-ion BMS hardware on the bench — populated PCB with cell-tap harness mounted to a wood-framed battery holder loaded with cylindrical Li-ion cells, ribbon cabling routed to the side.",
+          "PHOTO — ASSEMBLED 10S Li-ion BMS · BENCH BUILD",
+        )}${photoFigure(
+          eloadReworkedUrl,
+          4000,
+          2252,
+          "Top-down view of the reworked 300 W programmable electronic-load enclosure with the lid removed — cooling fan, toroidal inductor, MOSFET bank on heatsink, and main PCB visible inside the white chassis, output leads coiled alongside.",
+          "PHOTO — 300 W E-LOAD · REWORKED ENCLOSURE",
+        )}</div>`
       : "";
   return `<div class="block">
     ${stampLine(`[${p.badge}] · ${p.span}`)}

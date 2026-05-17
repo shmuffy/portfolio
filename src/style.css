@@ -461,6 +461,41 @@ main.stack {
   max-height: 32rem;
 }
 
+/* mixed orientation variant — when one photo is landscape and one portrait,
+   size by a shared height so they share a baseline instead of the landscape
+   collapsing to a much shorter height than the portrait. */
+.figure-pair--mixed > .figure--photo {
+  max-width: none;
+  flex: 0 1 auto;
+}
+.figure-pair--mixed > .figure--photo img {
+  width: auto;
+  height: 22rem;
+  max-width: 100%;
+  max-height: none;
+}
+@media (max-width: 600px) {
+  .figure-pair--mixed > .figure--photo img { height: 14rem; }
+}
+
+/* wider variant — for landscape photos that should split the column 50/50
+   rather than be capped to portrait-PCB width. */
+.figure-pair--wide {
+  max-width: min(100%, var(--measure));
+  flex-wrap: nowrap;
+  align-items: stretch;
+}
+.figure-pair--wide > .figure--photo {
+  flex: 1 1 0;
+  min-width: 0;
+  max-width: none;
+}
+.figure-pair--wide > .figure--photo img {
+  width: 100%;
+  height: auto;
+  max-height: none;
+}
+
 /* a single mono flow line: A → B → C */
 .flowline {
   font-size: var(--fs-sm);
